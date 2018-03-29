@@ -6,7 +6,7 @@
 # All values in this file are set to pass-winmenu's default settings,
 # so feel free to delete them from this file; they're only here
 # for your reference.
-password-store: '%userprofile%\.pass'
+password-store: '%userprofile%\.password-store'
 # A regex string against which all filenames in the password directory are
 # compared. All matching files are considered password files.
 password-file-match: '.*\.gpg$'
