@@ -20,14 +20,16 @@ use-git: true
 # the Git library to sync your password repository. This library, however,
 # has several limitations. For instance, SSH remotes are not supported.
 # By setting this value to 'native-git', pass-winmenu will use your native
-# Git installation instead, 
+# Git installation instead.
 sync-mode: builtin
 # Path to the Git executable that should be used. Only used when sync-mode
-# is set to 'native-git'. 
-git-path: git
-# Path to the ssh client executable that should be used. Only used when sync-mode
 # is set to 'native-git'.
-ssh-path: 'C:\Program Files\PuTTY\plink.exe'
+git-path: git
+# Path to the ssh client executable that should be used. Only used when
+# sync-mode is set to 'native-git'. This is usefull if you have a passphrase on
+# your key and want to use plink.exe/pageant.exe to supply the key.
+# Example: 'C:\Program Files\PuTTY\plink.exe'
+ssh-path: null
 
 # Amount of time (in seconds) your passwords should remain on the clipboard.
 clipboard-timeout: 30

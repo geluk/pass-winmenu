@@ -39,7 +39,7 @@ namespace PassWinmenu.Configuration
 
 
 		public bool UseGit { get; set; } = true;
-		public string SshPath { get; set; } = String.Empty;
+		public string SshPath { get; set; } = null;
 
 		[YamlIgnore]
 		public SyncMode SyncMode => (SyncMode)Enum.Parse(typeof(SyncMode), SyncModeString.ToPascalCase(), true);
