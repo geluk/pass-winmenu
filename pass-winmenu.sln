@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pass-winmenu", "pass-winmenu\pass-winmenu.csproj", "{0292BCB9-D48A-4041-AD9E-32E9728E174E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pass-winmenu-tests", "pass-winmenu-tests\pass-winmenu-tests.csproj", "{1818BB4C-A1BA-4DBA-84FC-AE12A7E252A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{0292BCB9-D48A-4041-AD9E-32E9728E174E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0292BCB9-D48A-4041-AD9E-32E9728E174E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0292BCB9-D48A-4041-AD9E-32E9728E174E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1818BB4C-A1BA-4DBA-84FC-AE12A7E252A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1818BB4C-A1BA-4DBA-84FC-AE12A7E252A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1818BB4C-A1BA-4DBA-84FC-AE12A7E252A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1818BB4C-A1BA-4DBA-84FC-AE12A7E252A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28307F9E-E5C4-46B6-95A3-EA337105FA1E}
 	EndGlobalSection
 EndGlobal
