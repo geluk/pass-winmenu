@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace PassWinmenu.Hotkeys
 {
+    // See:
+    //      /src/Hotkeys/HotkeyRegistrars.Windows.cs
+    //      /src/Hotkeys/HotkeyRegistrars.Control.cs
+
     /// <summary>
     /// Provides a default set of <see cref="IHotkeyRegistrar"/>s.
     /// </summary>

@@ -27,6 +27,11 @@ namespace PassWinmenu.Hotkeys
             /// <param name="rr">
             /// The request to convert to a hotkey.
             /// </param>
+            /// <exception cref="HotkeyException">
+            /// An error occured in registering the hotkey. Refer to 
+            /// documentation for the particular <see cref="IHotkeyRegistrar"/>
+            /// in use.
+            /// </exception>
             public static implicit operator Hotkey(RegistrationRequest rr)
             {
                 return rr.With(DefaultRegistrar);
@@ -79,6 +84,11 @@ namespace PassWinmenu.Hotkeys
             /// <returns>
             /// A hotkey registered with the specified registrar.
             /// </returns>
+            /// <exception cref="HotkeyException">
+            /// An error occured in registering the hotkey. Refer to
+            /// documentation for the particular <see cref="IHotkeyRegistrar"/>
+            /// in use.
+            /// </exception>
             public Hotkey With(IHotkeyRegistrar registrar)
             {
                 Hotkey hotkey = null;
@@ -95,12 +105,19 @@ namespace PassWinmenu.Hotkeys
         }
 
 
-
         private static IHotkeyRegistrar _defaultRegistrar;
 
+
+        static Hotkey()
+        {
+            _defaultRegistrar = HotkeyRegistrars.Windows;
+        }
+
+
         /// <summary>
-        /// The default <see cref="IHotkeyRegistrar"/> to be used when no
-        /// registrar is specified with a request to register a hotkey.
+        /// The <see cref="IHotkeyRegistrar"/> to be used when no registrar is 
+        /// specified with a request to register a hotkey. Initialised to
+        /// <see cref="HotkeyRegistrars.Windows"/>.
         /// </summary>
         /// <exception cref="ArgumentNullException"/>
         public static IHotkeyRegistrar DefaultRegistrar
@@ -135,6 +152,10 @@ namespace PassWinmenu.Hotkeys
         /// A <see cref="RegistrationRequest"/> object which can be used to
         /// specify a particular <see cref="IHotkeyRegistrar"/> to use.
         /// </returns>
+        /// <exception cref="HotkeyException">
+        /// An error occured in registering the hotkey. Refer to documentation
+        /// for the particular <see cref="IHotkeyRegistrar"/> in use.
+        /// </exception>
         public static RegistrationRequest Register(
             ModifierKeys modifiers, Key key, bool repeats = true
             )
@@ -156,6 +177,10 @@ namespace PassWinmenu.Hotkeys
         /// A <see cref="RegistrationRequest"/> object which can be used to
         /// specify a particular <see cref="IHotkeyRegistrar"/> to use.
         /// </returns>
+        /// <exception cref="HotkeyException">
+        /// An error occured in registering the hotkey. Refer to documentation
+        /// for the particular <see cref="IHotkeyRegistrar"/> in use.
+        /// </exception>
         public static RegistrationRequest Register(
             Key key, bool repeats = true
             )

@@ -48,6 +48,12 @@ namespace PassWinmenu.Hotkeys
             get;
         }
 
+        /// <summary>
+        /// Occurs when an <see cref="IDisposable"/> provided to unregister a
+        /// hotkey is disposed.
+        /// </summary>
+        public event EventHandler<(ModifierKeys, Key)> Disposal;
+
 
         /// <summary>
         /// Convenience method for triggering all hotkeys registered with the
