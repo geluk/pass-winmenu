@@ -7,7 +7,7 @@ using System.Windows.Input;
 namespace PassWinmenu.Hotkeys
 {
     /// <summary>
-    /// Unit tests for the <see cref="Hotkey"/> and related classes.
+    /// Unit tests for the <see cref="Hotkey"/> class.
     /// </summary>
     [TestClass]
     public class HotkeyUnitTests

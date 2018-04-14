@@ -120,6 +120,8 @@ namespace PassWinmenu.Hotkeys
                     _hotkeys.Remove((modifierKeys, key));
 
                 isDisposed = true;
+
+                this.Disposal?.Invoke(this, (modifierKeys, key));
             });
 
             // We ignore the repeat parameter as it doesn't really factor into

@@ -122,6 +122,7 @@
     <Compile Include="src\Hotkeys\HotkeyRegistrars.Control.cs" />
     <Compile Include="src\Hotkeys\HotkeyRegistrars.cs" />
     <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.MessageWindow.cs" />
     <Compile Include="src\Hotkeys\IHotkeyRegistrar.cs" />
     <Compile Include="src\Logger.cs" />
     <Compile Include="src\PasswordGeneration\PasswordGenerationOptions.cs" />

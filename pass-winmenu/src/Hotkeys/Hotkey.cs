@@ -199,7 +199,10 @@ namespace PassWinmenu.Hotkeys
         // Passed to the registrar as the handler for hotkey triggering.
         private void _firedHandler(object sender, EventArgs data)
         {
-            throw new NotImplementedException();
+            if (!this.Enabled || _disposed)
+                return;
+
+            this.Triggered?.Invoke(this, null);
         }
 
         
@@ -256,7 +259,11 @@ namespace PassWinmenu.Hotkeys
         /// </summary>
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (_disposed)
+                return;
+
+            _deregister.Dispose();
+            _disposed = true;
         }
     }
 }
