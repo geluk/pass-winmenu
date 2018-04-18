@@ -158,9 +158,6 @@ namespace PassWinmenu.Hotkeys
                     throw new ArgumentNullException(nameof(firedHandler));
                 }
 
-                // If a hotkey for this combination is already registered, then
-                // we can use a multicast delegate instead of re-registering.
-                //
                 // ID mirrors the [lParam] for the [WM_HOTKEY] message, but with
                 // the [MOD_NOREPEAT] flag bit included where appropriate.
                 var virtualKey = KeyInterop.VirtualKeyFromKey(key);
@@ -168,7 +165,23 @@ namespace PassWinmenu.Hotkeys
                                (!repeats ? (MOD_NOREPEAT << 16) : 0) |
                                virtualKey                            ;
 
-                if (_hotkeys.ContainsKey(hotkeyId))
+                // [RegisterHotKey] won't accept a hotkey registered with the
+                // same key combo but a different ID. As this means there would
+                // be no way to distinguish between hotkeys with [repeat] true
+                // and hotkeys with [repeat] false, we must throw an exception
+                // if a hotkey with the opposite value of [repeat] is already
+                // registered with us.
+                if (_hotkeys.ContainsKey(hotkeyId ^ (repeats ? MOD_NOREPEAT << 16 : 0)))
+                {
+                    throw new HotkeyException(
+                        "The Windows hotkey registrar does not support the " +
+                        "registering of hotkeys with differing configurations " +
+                        "for handling keyboard auto-repeat."
+                        );
+                }
+                // If a hotkey for this combination is already registered, then
+                // we can use a multicast delegate instead of re-registering.
+                else if (_hotkeys.ContainsKey(hotkeyId))
                 {
                     _hotkeys[hotkeyId] += firedHandler;
                 }
