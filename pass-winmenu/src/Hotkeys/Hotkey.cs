@@ -15,34 +15,93 @@ namespace PassWinmenu.Hotkeys
         : IDisposable
     {
         /// <summary>
-        /// Represents a request to register a hotkey with a
-        /// <see cref="IHotkeyRegistrar"/>.
+        /// A utility for building <see cref="Hotkey"/> instances.
         /// </summary>
-        public sealed class RegistrationRequest
+        public sealed class Builder
+            : IDisposable
         {
             /// <summary>
-            /// Converts a request to register a hotkey to a hotkey using
-            /// the <see cref="DefaultRegistrar"/>.
+            /// Builds a <see cref="Hotkey"/> from the configuration of a
+            /// specified <see cref="Builder"/>.
             /// </summary>
-            /// <param name="rr">
-            /// The request to convert to a hotkey.
+            /// <param name="b">
+            /// The builder to use in creating the <see cref="Hotkey"/>.
             /// </param>
             /// <exception cref="HotkeyException">
-            /// An error occured in registering the hotkey. Refer to 
-            /// documentation for the particular <see cref="IHotkeyRegistrar"/>
-            /// in use.
+            /// An error occured in building the hotkey.
             /// </exception>
-            public static implicit operator Hotkey(RegistrationRequest rr)
+            public static implicit operator Hotkey(Builder b)
             {
-                return rr.With(DefaultRegistrar);
+                b._retrieve(out var hk);
+
+                return hk;
             }
 
 
-            internal RegistrationRequest(
+
+            /// <summary>
+            /// Builds a <see cref="Hotkey"/> instance from the configuration
+            /// of this <see cref="Builder"/>, or retrieves one built previously.
+            /// </summary>
+            /// <param name="hotkey">
+            /// The <see cref="Hotkey"/> that was built or retrieved.
+            /// </param>
+            /// <returns>
+            /// True if a new <see cref="Hotkey"/> was built, false if one
+            /// built previously was retrieved.
+            /// </returns>
+            private bool _retrieve(out Hotkey hotkey)
+            {
+                if (_hotkey != null)
+                {
+                    hotkey = _hotkey;
+                    return false;
+                }
+
+                _hotkey = new Hotkey(
+                    deregister: _registrar.Register(
+                        modifierKeys:   this.ModifierKeys,
+                        key:            this.Key,
+                        repeats:        this.Repeats,
+                        firedHandler:   (s, e) => _hotkey._firedHandler(s, e)
+                        ),
+                    mods:       this.ModifierKeys,
+                    key:        this.Key,
+                    repeats:    this.Repeats
+                    );
+
+                hotkey = _hotkey;
+                return true;
+            }
+            /// <summary>
+            /// Retrieves whether a <see cref="Hotkey"/> has been built.
+            /// </summary>
+            /// <returns>
+            /// True if a hotkey has been built, false if otherwise.
+            /// </returns>
+            private bool _canRetrieve() => _hotkey != null;
+            /// <summary>
+            /// Throws an <see cref="InvalidOperationException"/> if a hotkey
+            /// has already been built with this builder.
+            /// </summary>
+            private void _throwIfBuilt()
+            {
+                if (_canRetrieve())
+                {
+                    throw new InvalidOperationException(
+                        "A hotkey has already been built using this builder."
+                        );
+                }
+            }
+
+            private Hotkey _hotkey;
+            private IHotkeyRegistrar _registrar = DefaultRegistrar;
+
+            internal Builder(
                 ModifierKeys mods, Key key, bool repeats
                 )
             {
-                this.Modifiers = mods;
+                this.ModifierKeys = mods;
                 this.Key = key;
                 this.Repeats = repeats;
             }
@@ -52,12 +111,12 @@ namespace PassWinmenu.Hotkeys
             /// The modifier keys which are to be pressed with 
             /// <see cref="Key"/> in order to trigger the hotkey.
             /// </summary>
-            public ModifierKeys Modifiers
+            public ModifierKeys ModifierKeys
             {
                 get;
             }
             /// <summary>
-            /// The key that is to be pressed with <see cref="Modifiers"/> in
+            /// The key that is to be pressed with <see cref="ModifierKeys"/> in
             /// order to trigger the hotkey.
             /// </summary>
             public Key Key
@@ -73,13 +132,33 @@ namespace PassWinmenu.Hotkeys
                 get;
             }
 
+            /// <summary>
+            /// Provides access to <see cref="Hotkey.Triggered"/>. Operations
+            /// on this event will trigger hotkey building.
+            /// </summary>
+            public event EventHandler Triggered
+            {
+                add
+                {
+                    _retrieve(out var hk);
+
+                    hk.Triggered += value;
+                }
+                remove
+                {
+                    _retrieve(out var hk);
+
+                    hk.Triggered -= value;
+                }
+            }
 
             /// <summary>
             /// Specifies a registrar with which to register the hotkey.
             /// </summary>
             /// <param name="registrar">
             /// The <see cref="IHotkeyRegistrar"/> with which the hotkey is
-            /// to be registered.
+            /// to be registered. If null, the <see cref="DefaultRegistrar"/>
+            /// is used.
             /// </param>
             /// <returns>
             /// A hotkey registered with the specified registrar.
@@ -89,18 +168,38 @@ namespace PassWinmenu.Hotkeys
             /// documentation for the particular <see cref="IHotkeyRegistrar"/>
             /// in use.
             /// </exception>
-            public Hotkey With(IHotkeyRegistrar registrar)
+            /// <exception cref="InvalidOperationException">
+            /// A <see cref="Hotkey"/> has already been built.
+            /// </exception>
+            public Builder With(IHotkeyRegistrar registrar)
             {
-                Hotkey hotkey = null;
+                _throwIfBuilt();
 
-                hotkey = new Hotkey((registrar ?? DefaultRegistrar).Register(
-                    modifierKeys: this.Modifiers,
-                    key:          this.Key,
-                    repeats:      this.Repeats,
-                    firedHandler: (s, e) => hotkey._firedHandler(s, e)
-                    ), this.Modifiers, this.Key, this.Repeats);
+                _registrar = registrar ?? DefaultRegistrar;
 
-                return hotkey;
+                return this;
+
+                //Hotkey hotkey = null;
+
+                //hotkey = new Hotkey((registrar ?? DefaultRegistrar).Register(
+                //    modifierKeys: this.Modifiers,
+                //    key:          this.Key,
+                //    repeats:      this.Repeats,
+                //    firedHandler: (s, e) => hotkey._firedHandler(s, e)
+                //    ), this.Modifiers, this.Key, this.Repeats);
+
+                //return hotkey;
+            }
+
+            /// <summary>
+            /// Unregisters the hotkey. Calling this method will trigger hotkey
+            /// building.
+            /// </summary>
+            public void Dispose()
+            {
+                _retrieve(out var hk);
+
+                hk.Dispose();
             }
         }
 
@@ -156,11 +255,11 @@ namespace PassWinmenu.Hotkeys
         /// An error occured in registering the hotkey. Refer to documentation
         /// for the particular <see cref="IHotkeyRegistrar"/> in use.
         /// </exception>
-        public static RegistrationRequest Register(
+        public static Builder Register(
             ModifierKeys modifiers, Key key, bool repeats = true
             )
         {
-            return new RegistrationRequest(modifiers, key, repeats);
+            return new Builder(modifiers, key, repeats);
         }
         /// <summary>
         /// Registers a hotkey.
@@ -181,7 +280,7 @@ namespace PassWinmenu.Hotkeys
         /// An error occured in registering the hotkey. Refer to documentation
         /// for the particular <see cref="IHotkeyRegistrar"/> in use.
         /// </exception>
-        public static RegistrationRequest Register(
+        public static Builder Register(
             Key key, bool repeats = true
             )
         {

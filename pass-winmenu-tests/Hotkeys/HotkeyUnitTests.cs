@@ -52,24 +52,24 @@ namespace PassWinmenu.Hotkeys
         [TestMethod, TestCategory(Category)]
         public void Register_ReturnValue_ModifiersKeyRepeats()
         {
-            var rr = Hotkey.Register(Modifiers, KeyCode, Repeats);
+            var b = Hotkey.Register(Modifiers, KeyCode, Repeats);
 
-            Assert.IsTrue(rr is Hotkey.RegistrationRequest);
+            Assert.IsTrue(b is Hotkey.Builder);
 
-            Assert.AreEqual(Modifiers, rr.Modifiers);
-            Assert.AreEqual(KeyCode, rr.Key);
-            Assert.AreEqual(Repeats, rr.Repeats);
+            Assert.AreEqual(Modifiers, b.ModifierKeys);
+            Assert.AreEqual(KeyCode,   b.Key);
+            Assert.AreEqual(Repeats,   b.Repeats);
         }
         [TestMethod, TestCategory(Category)]
         public void Register_ReturnValue_KeyRepeats()
         {
-            var rr = Hotkey.Register(KeyCode, Repeats);
+            var b = Hotkey.Register(KeyCode, Repeats);
 
-            Assert.IsTrue(rr is Hotkey.RegistrationRequest);
+            Assert.IsTrue(b is Hotkey.Builder);
 
-            Assert.AreEqual(ModifierKeys.None, rr.Modifiers);
-            Assert.AreEqual(KeyCode, rr.Key);
-            Assert.AreEqual(Repeats, rr.Repeats);
+            Assert.AreEqual(ModifierKeys.None, b.ModifierKeys);
+            Assert.AreEqual(KeyCode, b.Key);
+            Assert.AreEqual(Repeats, b.Repeats);
         }
 
         [TestMethod, TestCategory(Category)]
@@ -79,9 +79,9 @@ namespace PassWinmenu.Hotkeys
 
             var hkCount = _registrar.Hotkeys.Count;
 
-            Hotkey.RegistrationRequest rr = Hotkey.Register(KeyCode);
+            Hotkey.Builder b = Hotkey.Register(KeyCode);
 
-            Hotkey hk = rr;
+            Hotkey hk = b;
 
             Assert.AreEqual(hkCount + 1, _registrar.Hotkeys.Count);
         }
