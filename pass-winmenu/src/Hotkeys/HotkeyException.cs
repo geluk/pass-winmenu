@@ -6,5 +6,7 @@ namespace PassWinmenu.Hotkeys
 	internal class HotkeyException : Exception
 	{
 		public HotkeyException(string message) : base(message) { }
+        public HotkeyException(string message, Exception innerException)
+            : base(message, innerException) { }
 	}
 }

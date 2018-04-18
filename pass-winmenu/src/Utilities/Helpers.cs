@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace PassWinmenu.Utilities
 {
@@ -74,5 +75,16 @@ namespace PassWinmenu.Utilities
 
 			return null;
 		}
+
+        /// <summary>
+        /// Retrieves an <see cref="Exception"/> representing the last Win32
+        /// error.
+        /// </summary>
+        internal static Exception LastWin32Exception()
+        {
+            return Marshal.GetExceptionForHR(
+                Marshal.GetHRForLastWin32Error()
+                );
+        }
 	}
 }

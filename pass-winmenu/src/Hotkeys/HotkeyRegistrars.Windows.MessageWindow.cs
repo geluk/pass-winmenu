@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
+using Helpers = PassWinmenu.Utilities.Helpers;
+
 namespace PassWinmenu.Hotkeys
 {
     // Abstraction over a message-only window for the Windows hotkey registrar.
@@ -323,9 +325,7 @@ namespace PassWinmenu.Hotkeys
 
                     if (_windowAtom == 0)
                     {
-                        throw Marshal.GetExceptionForHR(
-                            Marshal.GetHRForLastWin32Error()
-                            );
+                        throw Helpers.LastWin32Exception();
                     }
 
                     this.Handle = CreateWindowEx(
@@ -345,13 +345,11 @@ namespace PassWinmenu.Hotkeys
 
                     if (this.Handle == IntPtr.Zero)
                     {
-                        throw Marshal.GetExceptionForHR(
-                            Marshal.GetHRForLastWin32Error()
-                            );
+                        throw Helpers.LastWin32Exception();
                     }
                 }
                 /// <summary>
-                /// Creates a message-only window with the specified procedures
+                /// Creates a message-only window with the specified procedure
                 /// for processing messages.
                 /// </summary>
                 /// <param name="procs">
@@ -395,9 +393,7 @@ namespace PassWinmenu.Hotkeys
                     if (!DestroyWindow(this.Handle) ||
                         !UnregisterClass((IntPtr)_windowAtom, IntPtr.Zero))
                     {
-                        throw Marshal.GetExceptionForHR(
-                            Marshal.GetHRForLastWin32Error()
-                            );
+                        throw Helpers.LastWin32Exception();
                     }
 
                     this.Procedures.Clear();

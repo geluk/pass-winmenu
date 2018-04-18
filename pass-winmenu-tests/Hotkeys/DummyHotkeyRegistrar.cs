@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using PassWinmenu.TestUtils;
+using PassWinmenu.Utilities;
 
 namespace PassWinmenu.Hotkeys
 {
@@ -22,7 +22,10 @@ namespace PassWinmenu.Hotkeys
         /// </summary>
         public DummyHotkeyRegistrar()
         {
-            _hotkeys = new Dictionary<(ModifierKeys, Key), EventHandler>();
+            var dict = new Dictionary<(ModifierKeys, Key), EventHandler>();
+
+            _hotkeys = dict;
+            this.Hotkeys = dict;
         }
 
 
@@ -101,12 +104,7 @@ namespace PassWinmenu.Hotkeys
             // need to explicitly replace it in the dictionary.
             _hotkeys[(modifierKeys, key)] = handler;
 
-            bool isDisposed = false;
-            return new DummyDisposable(() => {
-                // Do nothing if we've already been disposed.
-                if (isDisposed)
-                    return;
-
+            return new Disposable(() => {
                 // We don't need to do what we did above as we know that the
                 // dictionary will always contain a delegate for us to work
                 // with, and because we assign the newly-created multicast
@@ -118,8 +116,6 @@ namespace PassWinmenu.Hotkeys
                 // want to remove it from the dictionary to prevent an NRE.
                 if (h == null)
                     _hotkeys.Remove((modifierKeys, key));
-
-                isDisposed = true;
 
                 this.Disposal?.Invoke(this, (modifierKeys, key));
             });
