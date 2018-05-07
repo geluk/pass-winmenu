@@ -97,9 +97,7 @@ namespace PassWinmenu.Hotkeys
             private Hotkey _hotkey;
             private IHotkeyRegistrar _registrar = DefaultRegistrar;
 
-            internal Builder(
-                ModifierKeys mods, Key key, bool repeats
-                )
+            internal Builder(ModifierKeys mods, Key key, bool repeats)
             {
                 this.ModifierKeys = mods;
                 this.Key = key;

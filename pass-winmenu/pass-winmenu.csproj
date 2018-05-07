@@ -119,7 +119,8 @@
     <Compile Include="src\DirectoryAutocomplete.cs" />
     <Compile Include="src\ExternalPrograms\GpgAgent.cs" />
     <Compile Include="src\Hotkeys\Hotkey.cs" />
-    <Compile Include="src\Hotkeys\HotkeyRegistrars.Control.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.KeyEventSource.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.UI.cs" />
     <Compile Include="src\Hotkeys\HotkeyRegistrars.cs" />
     <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.cs" />
     <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.MessageWindow.cs" />

@@ -8,7 +8,7 @@ namespace PassWinmenu.Hotkeys
 {
     // See:
     //      /src/Hotkeys/HotkeyRegistrars.Windows.cs
-    //      /src/Hotkeys/HotkeyRegistrars.Control.cs
+    //      /src/Hotkeys/HotkeyRegistrars.UI.cs
 
     /// <summary>
     /// Provides a default set of <see cref="IHotkeyRegistrar"/>s.
