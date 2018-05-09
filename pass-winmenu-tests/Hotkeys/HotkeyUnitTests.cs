@@ -150,7 +150,7 @@ namespace PassWinmenu.Hotkeys
         }
 
         [TestMethod, TestCategory(Category)]
-        public void Hotkey_DefaultPropertyValues()
+        public void _Properties_Initialised()
         {
             Assert.AreEqual(true, _hotkey.Enabled);
             Assert.AreEqual(Modifiers, _hotkey.ModifierKeys);

@@ -12,7 +12,7 @@ namespace PassWinmenu.Utilities
         private const string Category = "Utilities: IDisposable wrapper";
 
         [TestMethod, TestCategory(Category)]
-        public void Is_IDisposable()
+        public void _Is_IDisposable()
         {
             var d = new Disposable(() => {});
 
