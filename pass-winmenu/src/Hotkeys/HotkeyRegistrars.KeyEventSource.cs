@@ -15,14 +15,14 @@ namespace PassWinmenu.Hotkeys
     {
         /// <summary>
         /// A generic registrar which uses a <see cref="IKeyEventSource"/> as
-        /// 
+        /// its source of input.
         /// </summary>
         public sealed class KeyEventSource
             : IHotkeyRegistrar
         {
-            // Keeps track of previously-created [KeyEventSource]s
-            // but using weak references to allow collection if consuming code
-            // is no longer using the 
+            // Keeps track of previously-created [KeyEventSource]s but using 
+            // weak references to allow garbage collection if consuming code
+            // is no longer using the event source.
             private static readonly IDictionary<object, WeakReference<KeyEventSource>>
                 _registrarCache;
 
@@ -210,10 +210,6 @@ namespace PassWinmenu.Hotkeys
         /// Occurs when a key is pressed.
         /// </summary>
         event KeyEventHandler KeyDown;
-        /// <summary>
-        /// Occurs when a character, space, or backspace key is pressed.
-        /// </summary>
-        event KeyEventHandler KeyPress;
         /// <summary>
         /// Occurs when a key is released.
         /// </summary>

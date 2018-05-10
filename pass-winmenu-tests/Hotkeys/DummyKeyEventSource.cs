@@ -43,7 +43,6 @@ namespace PassWinmenu.Hotkeys
             };
 
             this.KeyDown?.Invoke(this, kea);
-            this.KeyPress?.Invoke(this, kea);
         }
         /// <summary>
         /// Triggers a <see cref="KeyDown"/> followed by a <see cref="KeyPress"/>
@@ -82,7 +81,6 @@ namespace PassWinmenu.Hotkeys
         }
 
         public event KeyEventHandler KeyDown;
-        public event KeyEventHandler KeyPress;
         public event KeyEventHandler KeyUp;
     }
 }
