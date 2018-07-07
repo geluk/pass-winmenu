@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Reflection;
+using PassWinmenu.Utilities.ExtensionMethods;
 
 namespace PassWinmenu.Hotkeys
 {
@@ -27,10 +29,13 @@ namespace PassWinmenu.Hotkeys
 
 
         /// <summary>
-        /// Triggers a <see cref="KeyDown"/> followed by a <see cref="KeyPress"/>
-        /// event for the specified key.
+        /// Triggers a <see cref="KeyDown"/> event for the specified key with the
+        /// value of the <see cref="KeyEventArgs.IsRepeat"/> property in set to
+        /// the value provided.
         /// </summary>
-        public void Actuate(Key key)
+        /// <param name="key"></param>
+        /// <param name="isRepeat"></param>
+        public void Actuate(Key key, bool isRepeat)
         {
             var kea = new KeyEventArgs(
                 keyboard:    Keyboard.PrimaryDevice,
@@ -42,11 +47,30 @@ namespace PassWinmenu.Hotkeys
                 RoutedEvent = Keyboard.KeyDownEvent
             };
 
+            kea.SetRepeat(isRepeat);
+
             this.KeyDown?.Invoke(this, kea);
         }
         /// <summary>
-        /// Triggers a <see cref="KeyDown"/> followed by a <see cref="KeyPress"/>
-        /// event for each of the specified keys.
+        /// Triggers a <see cref="KeyDown"/> for the specified key.
+        /// </summary>
+        public void Actuate(Key key)
+        {
+            this.Actuate(key, isRepeat: false);
+        }
+        /// <summary>
+        /// Triggers a <see cref="KeyDown"/> event for each of the specified keys
+        /// with the value of the <see cref="KeyEventArgs.IsRepeat"/> property
+        /// set to the value provided for that key.
+        /// </summary>
+        /// <param name="keys"></param>
+        public void Actuate(IReadOnlyDictionary<Key, bool> keys)
+        {
+            foreach (var kvp in keys)
+                this.Actuate(kvp.Key, isRepeat: kvp.Value);
+        }
+        /// <summary>
+        /// Triggers a <see cref="KeyDown"/> event for each of the specified keys.
         /// </summary>
         public void Actuate(IEnumerable<Key> keys)
         {

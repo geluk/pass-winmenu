@@ -132,6 +132,7 @@
     <Compile Include="src\PinentryWatcher.cs" />
     <Compile Include="src\Utilities\Disposable.cs" />
     <Compile Include="src\Utilities\ExtensionMethods\DirectoryInfoExtensions.cs" />
+    <Compile Include="src\Utilities\ExtensionMethods\KeyEventArgsExtensions.cs" />
     <Compile Include="src\Utilities\ExtensionMethods\StringExtensions.cs" />
     <Compile Include="src\Hotkeys\HotkeyException.cs" />
     <Compile Include="src\Hotkeys\HotkeyManager.cs" />
