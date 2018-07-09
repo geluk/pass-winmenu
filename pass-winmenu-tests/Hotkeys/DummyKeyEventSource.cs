@@ -30,8 +30,8 @@ namespace PassWinmenu.Hotkeys
 
         /// <summary>
         /// Triggers a <see cref="KeyDown"/> event for the specified key with the
-        /// value of the <see cref="KeyEventArgs.IsRepeat"/> property in set to
-        /// the value provided.
+        /// value of the <see cref="KeyEventArgs.IsRepeat"/> property set to the 
+        /// value provided.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="isRepeat"></param>
@@ -68,6 +68,18 @@ namespace PassWinmenu.Hotkeys
         {
             foreach (var kvp in keys)
                 this.Actuate(kvp.Key, isRepeat: kvp.Value);
+        }
+        /// <summary>
+        /// Triggers a <see cref="KeyDown"/> event for each of the specified keys
+        /// with the value of the <see cref="KeyEventArgs.IsRepeat"/> property set
+        /// to the specified value for all keys.
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="isRepeat"></param>
+        public void Actuate(IEnumerable<Key> keys, bool isRepeat)
+        {
+            foreach (var key in keys)
+                this.Actuate(key, isRepeat);
         }
         /// <summary>
         /// Triggers a <see cref="KeyDown"/> event for each of the specified keys.

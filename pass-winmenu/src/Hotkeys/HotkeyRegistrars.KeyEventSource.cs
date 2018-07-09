@@ -20,6 +20,26 @@ namespace PassWinmenu.Hotkeys
         public sealed class KeyEventSource
             : IHotkeyRegistrar
         {
+            /* Implementation idea:
+             * 
+             * A trie containing each of the key combinations.
+             * 
+             * As keys are pressed, each node representing one of the keys
+             * pressed is moved into an "active" pool. As the key combination
+             * is completed, the nodes in this pool are swapped out for nodes
+             * further down the trie branches.
+             * 
+             * Nodes representing a full combination hold a delegate that is
+             * the handler, or some other information for finding the handler.
+             * 
+             * Nodes store their key value and reference previous and subsequent
+             * nodes (like a doubly-linked list) to enable them to be removed
+             * from the active pool as required when a key is pressed or released.
+             * 
+             * This method also enforces the actuation order is the same as is
+             * specified in the combination.
+             */
+
             // Keeps track of previously-created [KeyEventSource]s but using 
             // weak references to allow garbage collection if consuming code
             // is no longer using the event source.
