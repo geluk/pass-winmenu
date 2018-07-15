@@ -30,12 +30,14 @@ namespace PassWinmenu.Utilities.ExtensionMethods
         /// The value <see cref="KeyEventArgs.IsRepeat"/> is to be set to.
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
-        internal static void SetRepeat(this KeyEventArgs keyEventArgs, bool value)
+        internal static KeyEventArgs SetRepeat(this KeyEventArgs keyEventArgs, bool value)
         {
             if (keyEventArgs == null)
                 throw new ArgumentNullException(nameof(keyEventArgs));
 
             _setRepeatInfo.Invoke(keyEventArgs, new object[] { value });
+
+            return keyEventArgs;
         }
     }
 }

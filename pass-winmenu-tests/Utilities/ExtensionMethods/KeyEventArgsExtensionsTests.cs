@@ -79,5 +79,19 @@ namespace PassWinmenu.Utilities.ExtensionMethods
 
             Assert.IsFalse(keArgs.IsRepeat);
         }
+
+        [TestMethod, TestCategory(Category)]
+        public void SetRepeat_ReturnsArg()
+        {
+            var keArgs = new KeyEventArgs(
+                keyboard: Keyboard.PrimaryDevice,
+                inputSource: new HwndSource(0, 0, 0, 0, 0, String.Empty, IntPtr.Zero),
+                timestamp: 0,
+                key: Key.A
+                );
+
+            Assert.AreSame(keArgs, keArgs.SetRepeat(true));
+            Assert.AreSame(keArgs, keArgs.SetRepeat(false));
+        }
     }
 }

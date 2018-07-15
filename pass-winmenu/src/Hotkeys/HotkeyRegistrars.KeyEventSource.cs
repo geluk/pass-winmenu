@@ -38,7 +38,31 @@ namespace PassWinmenu.Hotkeys
              * 
              * This method also enforces the actuation order is the same as is
              * specified in the combination.
+             *
+             * ---
+             * 
+             * Idea not viable--only works if keys are pressed in order, and would
+             * not handle situation where an intermediate key (e.g. the Shift in a
+             * Ctrl-Shift-G) was released before the final key (here, G).
+             * 
+             * Method also needs to handle ignoring the order of modifiers while
+             * still enforcing the order of the final key. Could be achieved in the
+             * trie with multiple branches connecting at the final key (i.e. having
+             * two separate branches, Ctrl-Shift-G and Shift-Ctrl-G), but throws up
+             * the same issues with releasing keys.
              */
+
+            /// <summary>
+            /// A node, representing a key, in a trie used to store key
+            /// combinations.
+            /// </summary>
+            private sealed class KeyNode
+            {
+                /// <summary>
+                /// The parent 
+                /// </summary>
+                public KeyNode Parent { get; }
+            }
 
             // Keeps track of previously-created [KeyEventSource]s but using 
             // weak references to allow garbage collection if consuming code
