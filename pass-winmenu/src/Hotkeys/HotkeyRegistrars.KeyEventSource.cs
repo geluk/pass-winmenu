@@ -20,48 +20,68 @@ namespace PassWinmenu.Hotkeys
         public sealed class KeyEventSource
             : IHotkeyRegistrar
         {
-            /* Implementation idea:
-             * 
-             * A trie containing each of the key combinations.
-             * 
-             * As keys are pressed, each node representing one of the keys
-             * pressed is moved into an "active" pool. As the key combination
-             * is completed, the nodes in this pool are swapped out for nodes
-             * further down the trie branches.
-             * 
-             * Nodes representing a full combination hold a delegate that is
-             * the handler, or some other information for finding the handler.
-             * 
-             * Nodes store their key value and reference previous and subsequent
-             * nodes (like a doubly-linked list) to enable them to be removed
-             * from the active pool as required when a key is pressed or released.
-             * 
-             * This method also enforces the actuation order is the same as is
-             * specified in the combination.
-             *
-             * ---
-             * 
-             * Idea not viable--only works if keys are pressed in order, and would
-             * not handle situation where an intermediate key (e.g. the Shift in a
-             * Ctrl-Shift-G) was released before the final key (here, G).
-             * 
-             * Method also needs to handle ignoring the order of modifiers while
-             * still enforcing the order of the final key. Could be achieved in the
-             * trie with multiple branches connecting at the final key (i.e. having
-             * two separate branches, Ctrl-Shift-G and Shift-Ctrl-G), but throws up
-             * the same issues with releasing keys.
-             */
+            private enum Direction { Up, Down };
 
             /// <summary>
-            /// A node, representing a key, in a trie used to store key
-            /// combinations.
+            /// Consumes key events to determine whether the handler for a key
+            /// combination should be fired.
             /// </summary>
-            private sealed class KeyNode
+            private sealed class ComboMachine
             {
                 /// <summary>
-                /// The parent 
+                /// Creates a new <see cref="ComboMachine"/> for the specified
+                /// modifiers and key.
                 /// </summary>
-                public KeyNode Parent { get; }
+                public ComboMachine(
+                    ModifierKeys modifiers, Key key, bool isRepeat,
+                    EventHandler handler
+                    )
+                {
+                    this.Modifiers = modifiers;
+                    this.Key = key;
+                    this.Repeats = isRepeat;
+                    this.Handler = handler;
+                }
+
+
+                /// <summary>
+                /// The modifier keys which will trigger the firing of the handler
+                /// when pressed with <see cref="Key"/>.
+                /// </summary>
+                public ModifierKeys Modifiers { get; }
+                /// <summary>
+                /// The key which will trigger the firing of the handler when pressed
+                /// with <see cref="Modifiers"/>.
+                /// </summary>
+                public Key Key { get; }
+                /// <summary>
+                /// Whether the firing of the handler will be triggered repeatedly
+                /// when the key combination is continuously held down.
+                /// </summary>
+                public bool Repeats { get; }
+
+
+                /// <summary>
+                /// The handler for the key combination.
+                /// </summary>
+                public EventHandler Handler { get; }
+
+
+                /// <summary>
+                /// Updates the state of the machine and reports whether the
+                /// handler for the combination should be fired.
+                /// </summary>
+                /// <param name="direction">
+                /// The direction of the key event.
+                /// </param>
+                /// <param name="key">
+                /// The event arguments for the actuation of the key.
+                /// </param>
+                /// <returns></returns>
+                public bool Update(Direction direction, KeyEventArgs eventArgs)
+                {
+                    throw new NotImplementedException();
+                }
             }
 
             // Keeps track of previously-created [KeyEventSource]s but using 
@@ -175,20 +195,30 @@ namespace PassWinmenu.Hotkeys
 
             // Source of key state change events
             private readonly IKeyEventSource _eventSource;
-            // The keys currently pressed
-            private readonly ISet<Key> _keysDown;
-            private readonly ISet<ModifierKeys> _modsDown;
+            // Machines for all current key combinations
+            private readonly IList<ComboMachine> _combos;
 
 
-            // Handles [KeyDown] events from the event source
+            // Generic handler for events from the event source.
+            private void _onKey(Direction dir, object sender, KeyEventArgs eventArgs)
+            {
+                foreach (var cm in _combos)
+                {
+                    if (cm.Update(dir, eventArgs))
+                    {
+                        cm.Handler.Invoke(sender, eventArgs);
+                    }
+                }
+            }
+            // Relays [KeyDown] events from the event source
             private void _onKeyDown(object sender, KeyEventArgs eventArgs)
             {
-                throw new NotImplementedException();
+                _onKey(Direction.Down, sender, eventArgs);
             }
-            // Handles [KeyUp] events from the event source
+            // Relays [KeyUp] events from the event source
             private void _onKeyUp(object sender, KeyEventArgs eventArgs)
             {
-                throw new NotImplementedException();
+                _onKey(Direction.Up, sender, eventArgs);
             }
 
 
@@ -198,8 +228,7 @@ namespace PassWinmenu.Hotkeys
                 _eventSource.KeyDown += _onKeyDown;
                 _eventSource.KeyUp += _onKeyUp;
 
-                _keysDown = new HashSet<Key>();
-                _modsDown = new HashSet<ModifierKeys>();
+                _combos = new List<ComboMachine>();
             }
 
 

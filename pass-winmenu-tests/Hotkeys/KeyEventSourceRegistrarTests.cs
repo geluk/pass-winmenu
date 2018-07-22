@@ -302,6 +302,74 @@ namespace PassWinmenu.Hotkeys
             Assert.AreEqual(2, firedCount);
         }
 
+        // The Windows hotkey registrar cannot accept two hotkeys with the same
+        // combination where one repeats and the other doesn't. While there isn't
+        // anything preventing this with the [KeyEventSource] registrar, we prevent
+        // it for consistency.
+
+        [TestMethod, TestCategory(Category)]
+        public void Register_MultipleHandlers_AllowedHomogeneous_NoRepeat()
+        {
+            string firedString = String.Empty;
+
+            // Works with no-repeat
+            var deregA = _registrar.Register(
+                modifierKeys:   ModifierKeys.Alt,
+                key:            Key.R,
+                repeats:        false,
+                firedHandler:   (s, e) => firedString += "A"
+                );
+
+            var deregB = _registrar.Register(
+                modifierKeys:   ModifierKeys.Alt,
+                key:            Key.R,
+                repeats:        false,
+                firedHandler:   (s, e) => firedString += "B"
+                );
+
+            _dummyEventSource.Actuate(new[] { Key.LeftAlt, Key.R });
+
+            Assert.AreEqual(1, firedString.Count(c => c == 'A'));
+            Assert.AreEqual(1, firedString.Count(c => c == 'B'));
+        }
+        [TestMethod, TestCategory(Category)]
+        public void Register_MultipleHandlers_AllowedHomogeneous_Repeats()
+        {
+            string firedString = String.Empty;
+
+            // Works with no-repeat
+            var deregA = _registrar.Register(
+                modifierKeys:   ModifierKeys.Shift,
+                key:            Key.Y,
+                repeats:        true,
+                firedHandler:   (s, e) => firedString += "A"
+                );
+
+            var deregB = _registrar.Register(
+                modifierKeys:   ModifierKeys.Shift,
+                key:            Key.Y,
+                repeats:        true,
+                firedHandler:   (s, e) => firedString += "B"
+                );
+
+            _dummyEventSource.Actuate(new[] { Key.RightShift, Key.Y });
+
+            Assert.AreEqual(1, firedString.Count(c => c == 'A'));
+            Assert.AreEqual(1, firedString.Count(c => c == 'B'));
+        }
+        [TestMethod, TestCategory(Category)]
+        public void Register_MultipleHandlers_FailsWithMixedRepeat()
+        {
+            // First doesn't repeat
+            _registrar.Register(ModifierKeys.Shift, Key.F, false, (s, e) => { });
+
+            // Second does
+            Assert.ThrowsException<HotkeyException>(() =>
+            {
+                _registrar.Register(ModifierKeys.Shift, Key.F, true, (s, e) => { });
+            });
+        }
+
         [TestMethod, TestCategory(Category)]
         public void Register_UnreliableActuation()
         {
