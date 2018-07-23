@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using PassWinmenu.Utilities.ExtensionMethods;
+
 namespace PassWinmenu.Hotkeys
 {
     // Implementation for a generic registrar using a key event source.
@@ -28,6 +30,12 @@ namespace PassWinmenu.Hotkeys
             /// </summary>
             private sealed class ComboMachine
             {
+                // Currently-actuated modifier keys, reset on trigger
+                private ModifierKeys _modsState;
+                // Whether [Key] is currently actuated, reset on trigger
+                private bool _keyState;
+
+
                 /// <summary>
                 /// Creates a new <see cref="ComboMachine"/> for the specified
                 /// modifiers and key.
@@ -40,7 +48,10 @@ namespace PassWinmenu.Hotkeys
                     this.Modifiers = modifiers;
                     this.Key = key;
                     this.Repeats = isRepeat;
-                    this.Handler = handler;
+                    this.Triggered = handler;
+
+                    _modsState = ModifierKeys.None;
+                    _keyState = false;
                 }
 
 
@@ -62,9 +73,13 @@ namespace PassWinmenu.Hotkeys
 
 
                 /// <summary>
-                /// The handler for the key combination.
+                /// The event fired when the key combination is pressed.
                 /// </summary>
-                public EventHandler Handler { get; }
+                public event EventHandler Triggered;
+                /// <summary>
+                /// The handlers currently registered for <see cref="Triggered"/>.
+                /// </summary>
+                public EventHandler Handlers => Triggered;
 
 
                 /// <summary>
@@ -78,9 +93,51 @@ namespace PassWinmenu.Hotkeys
                 /// The event arguments for the actuation of the key.
                 /// </param>
                 /// <returns></returns>
-                public bool Update(Direction direction, KeyEventArgs eventArgs)
+                public void Update(Direction direction, KeyEventArgs eventArgs)
                 {
-                    throw new NotImplementedException();
+                    switch (direction)
+                    {
+                        case Direction.Down:
+                        {
+                            // If we don't fire multiple times when a key is
+                            // held down, ignore repeated keys
+                            if (!this.Repeats && eventArgs.IsRepeat)
+                                return;
+
+                            // If the key pressed is the same as [Key], we want to
+                            // indicate that it is pressed, but only if the modifier
+                            // keys have already been pressed.
+                            if (eventArgs.Key == this.Key &&
+                                (_modsState & this.Modifiers) == this.Modifiers)
+                                _keyState = true;
+                            // Add the modifier key if it is actuated
+                            else if (eventArgs.AsModifierKey(out var mods))
+                                _modsState |= mods;
+
+                            // If we have a match, trigger and reset
+                            if (_keyState && (_modsState & this.Modifiers) == this.Modifiers)
+                            {
+                                _keyState = false;
+                                _modsState = ModifierKeys.None;
+
+                                this.Triggered?.Invoke(this, eventArgs);
+                            }
+                        } break;
+
+                        case Direction.Up:
+                        {
+                            // We don't test for repeats because it logically
+                            // doesn't make sense that a key-release event could
+                            // be repeated without a corresponding key down event,
+                            // and in any case it shouldn't make a difference if
+                            // they were.
+
+                            if (eventArgs.Key == this.Key)
+                                _keyState = false;
+                            else if (eventArgs.AsModifierKey(out var mods))
+                                _modsState &= ~mods;
+                        } break;
+                    }
                 }
             }
 
@@ -114,7 +171,10 @@ namespace PassWinmenu.Hotkeys
             /// </exception>
             public static KeyEventSource Create(IKeyEventSource eventSource)
             {
-                throw new NotImplementedException();
+                if (eventSource == null)
+                    throw new ArgumentNullException(nameof(eventSource));
+
+                return new KeyEventSource(eventSource);
             }
             /// <summary>
             /// Retrieves a <see cref="KeyEventSource"/> for a particular
@@ -204,10 +264,7 @@ namespace PassWinmenu.Hotkeys
             {
                 foreach (var cm in _combos)
                 {
-                    if (cm.Update(dir, eventArgs))
-                    {
-                        cm.Handler.Invoke(sender, eventArgs);
-                    }
+                    cm.Update(dir, eventArgs);
                 }
             }
             // Relays [KeyDown] events from the event source
@@ -257,6 +314,11 @@ namespace PassWinmenu.Hotkeys
             /// <exception cref="ArgumentNullException">
             /// <paramref name="firedHandler"/> was null.
             /// </exception>
+            /// <exception cref="HotkeyException">
+            /// A hotkey with the same <paramref name="modifierKeys"/> and
+            /// <paramref name="key"/> values but a different <paramref name="repeats"/>
+            /// value has already been registered.
+            /// </exception>
             /// <remarks>
             /// <para>
             /// This registrar supports the registration of multiple hotkeys
@@ -269,7 +331,59 @@ namespace PassWinmenu.Hotkeys
                 EventHandler firedHandler
                 )
             {
-                throw new NotImplementedException();
+                if (firedHandler == null)
+                    throw new ArgumentNullException(nameof(firedHandler));
+
+                ComboMachine combo;
+
+                // Do we already have a hotkey with this combination registered?
+                if (default(ComboMachine) != (combo = _combos.SingleOrDefault(
+                                                cm => cm.Modifiers == modifierKeys &&
+                                                      cm.Key       == key)))
+                {
+                    // If we do but its "repeat" configuration is not the same,
+                    // then we must throw.
+                    if (repeats != combo.Repeats)
+                    {
+                        throw new HotkeyException(
+                            "A hotkey with this combination but a different keyboard " +
+                            "auto-repeat configuration is already registered."
+                            );
+                    }
+
+                    // If we do but its "repeat" configuration is the same, then
+                    // we add its handler and continue
+                    combo.Triggered += firedHandler;
+                }
+                else
+                {
+                    // If we don't, then we create one.
+                    combo = new ComboMachine(modifierKeys, key, repeats, firedHandler);
+                    _combos.Add(combo);
+                }
+
+                // Return a disposable that will remove our handler and deregister
+                // the hotkey (if appropriate).
+                return new Utilities.Disposable(() =>
+                {
+                    // Do nothing if the hotkey has been deregistered.
+                    if (combo == null)
+                        return;
+
+                    // Otherwise, deregister our handler
+                    combo.Triggered -= firedHandler;
+
+                    // If no handlers remain, then we want to remove the instance
+                    // from our list of hotkeys
+                    if (combo.Handlers == null)
+                    {
+                        _combos.Remove(combo);
+
+                        // Null the reference so we can tell we've deregistered
+                        // the hotkey
+                        combo = null;
+                    }
+                });
             }
         }
     }

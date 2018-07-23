@@ -241,8 +241,10 @@ namespace PassWinmenu.Hotkeys
                 modifierKeys:   ModifierKeys.Control | ModifierKeys.Alt,
                 key:            Key.A, 
                 repeats:        false,
-                firedHandler:   (s, e) => firedCount++
-                );
+                firedHandler:   (s, e) =>
+                {
+                    firedCount++;
+                });
 
             var keys = new[] { Key.LeftCtrl, Key.RightAlt, Key.A };
 
@@ -273,7 +275,7 @@ namespace PassWinmenu.Hotkeys
             var deregisterer = _registrar.Register(
                 modifierKeys:   ModifierKeys.Control | ModifierKeys.Shift,
                 key:            Key.X, 
-                repeats:        false,
+                repeats:        true,
                 firedHandler:   (s, e) => firedCount++
                 );
 
@@ -300,6 +302,95 @@ namespace PassWinmenu.Hotkeys
             _dummyEventSource.Actuate(keys, isRepeat: true);
 
             Assert.AreEqual(2, firedCount);
+        }
+
+        [TestMethod, TestCategory(Category)]
+        public void Register_UnreliableActuation()
+        {
+            // Unreliable actuation, i.e. where the user would actuate keys,
+            // release some of them, then actuate again to finally make the
+            // full key combination.
+            //
+            // Key repeats are thrown in to emulate a key being continuously
+            // held down before the combination is fully made.
+
+            int firedCount = 0;
+
+            _registrar.Register(
+                modifierKeys: ModifierKeys.Control | ModifierKeys.Alt,
+                key: Key.A,
+                repeats: false,
+                firedHandler: (s, e) => firedCount++
+                );
+
+            _dummyEventSource.Actuate(Key.LeftCtrl);
+
+            Assert.AreEqual(0, firedCount);
+
+            _dummyEventSource.Actuate(Key.LeftAlt);
+            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
+
+            Assert.AreEqual(0, firedCount);
+
+            _dummyEventSource.Release(Key.LeftAlt);
+            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
+
+            Assert.AreEqual(0, firedCount);
+
+            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
+
+            Assert.AreEqual(0, firedCount);
+
+            _dummyEventSource.Actuate(new[] { Key.LeftAlt, Key.A });
+
+            Assert.AreEqual(1, firedCount);
+
+            _dummyEventSource.Actuate(
+                new[] { Key.LeftCtrl, Key.LeftAlt, Key.A }, isRepeat: true
+                );
+
+            Assert.AreEqual(1, firedCount);
+        }
+
+        [TestMethod, TestCategory(Category)]
+        public void Register_IrrelevantKeys()
+        {
+            // Other keys may be pressed while the combination is actuated. A hotkey
+            // should ignore these keys and not fire unless the combination is fully
+            // pressed.
+
+            int fireCount = 0;
+
+            _registrar.Register(
+                ModifierKeys.Control, Key.A, true, (s, e) => fireCount++
+                );
+
+            _dummyEventSource.Actuate(new[] { Key.LeftCtrl, Key.F, Key.LeftShift, Key.A, Key.R });
+
+            // Fires initially with noise
+            Assert.AreEqual(1, fireCount);
+
+            _dummyEventSource.Actuate(new[] { Key.F, Key.LeftCtrl, Key.R, Key.A }, isRepeat: true);
+
+            // Fires subsequently with noise
+            Assert.AreEqual(2, fireCount);
+
+            _dummyEventSource.Actuate(new[] { Key.R, Key.A }, isRepeat: true);
+
+            // Does not fire with irrelevant repeated key / incomplete combination
+            Assert.AreEqual(2, fireCount);
+
+            _dummyEventSource.Actuate(new[] { Key.LeftShift, Key.LeftCtrl }, isRepeat: true);
+
+            // Continues not to fire, even with irrelevant keys, because of wrong key
+            // actuation order (modifiers first, then key)
+            Assert.AreEqual(2, fireCount);
+
+            _dummyEventSource.Actuate(new[] { Key.Escape, Key.A, Key.Q }, isRepeat: true);
+
+            // Fires, even with irrelevant keys, once the modifiers + key have been
+            // actuated in the correct order
+            Assert.AreEqual(3, fireCount);
         }
 
         // The Windows hotkey registrar cannot accept two hotkeys with the same
@@ -368,54 +459,6 @@ namespace PassWinmenu.Hotkeys
             {
                 _registrar.Register(ModifierKeys.Shift, Key.F, true, (s, e) => { });
             });
-        }
-
-        [TestMethod, TestCategory(Category)]
-        public void Register_UnreliableActuation()
-        {
-            // Unreliable actuation, i.e. where the user would actuate keys,
-            // release some of them, then actuate again to finally make the
-            // full key combination.
-            //
-            // Key repeats are thrown in to emulate a key being continuously
-            // held down before the combination is fully made.
-
-            int firedCount = 0;
-
-            _registrar.Register(
-                modifierKeys:   ModifierKeys.Control | ModifierKeys.Alt,
-                key:            Key.A, 
-                repeats:        false,
-                firedHandler:   (s, e) => firedCount++
-                );
-
-            _dummyEventSource.Actuate(Key.LeftCtrl);
-
-            Assert.AreEqual(0, firedCount);
-
-            _dummyEventSource.Actuate(Key.LeftAlt);
-            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
-
-            Assert.AreEqual(0, firedCount);
-
-            _dummyEventSource.Release(Key.LeftAlt);
-            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
-
-            Assert.AreEqual(0, firedCount);
-
-            _dummyEventSource.Actuate(Key.LeftCtrl, isRepeat: true);
-
-            Assert.AreEqual(0, firedCount);
-
-            _dummyEventSource.Actuate(new[] { Key.LeftAlt, Key.A });
-
-            Assert.AreEqual(1, firedCount);
-
-            _dummyEventSource.Actuate(
-                new[] { Key.LeftCtrl, Key.LeftAlt, Key.A }, isRepeat: true
-                );
-
-            Assert.AreEqual(1, firedCount);
         }
 
         // The registrar should enforce that the combination is only
