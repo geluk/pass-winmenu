@@ -85,7 +85,9 @@ namespace PassWinmenu.Utilities.ExtensionMethods
                     modifier = ModifierKeys.Windows;
                     break;
 
-                default: modifier = default(ModifierKeys); break;
+                default:
+                    modifier = default(ModifierKeys);
+                    break;
             }
 
             return modifier != default(ModifierKeys);

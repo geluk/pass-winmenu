@@ -287,6 +287,9 @@ namespace PassWinmenu.Hotkeys
                 private readonly ushort _windowAtom;
                 // Guid used for the window class name.
                 private readonly Guid _windowClassName;
+                // A reference to our window procedure delegate. Required to prevent
+                // the GC collecting the delegate we pass to unmanaged code.
+                private readonly WndProc _procRef;
                 
                 /// <summary>
                 /// Creates a message-only window with the specified procedures
@@ -314,9 +317,14 @@ namespace PassWinmenu.Hotkeys
 
                     var hInstance = Process.GetCurrentProcess().Handle;
 
+                    // Keep a reference around for our window procedure to avoid
+                    // the GC collecting it. Important that this is not removed.
+                    _procRef = _proc;
+
                     var wndClass = new WindowClass
                     {
-                        lpfnWndProc   = _proc,
+                        // Always use [_procRef] and not [_proc]; see above.
+                        lpfnWndProc   = _procRef,
                         lpszClassName = _windowClassName.ToString(),
                         hInstance     = hInstance,
                     };
