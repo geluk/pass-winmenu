@@ -375,11 +375,6 @@ namespace PassWinmenu.Hotkeys
             // Fires subsequently with noise
             Assert.AreEqual(2, fireCount);
 
-            _dummyEventSource.Actuate(new[] { Key.R, Key.A }, isRepeat: true);
-
-            // Does not fire with irrelevant repeated key / incomplete combination
-            Assert.AreEqual(2, fireCount);
-
             _dummyEventSource.Actuate(new[] { Key.LeftShift, Key.LeftCtrl }, isRepeat: true);
 
             // Continues not to fire, even with irrelevant keys, because of wrong key
@@ -391,6 +386,100 @@ namespace PassWinmenu.Hotkeys
             // Fires, even with irrelevant keys, once the modifiers + key have been
             // actuated in the correct order
             Assert.AreEqual(3, fireCount);
+        }
+
+        [DataRow(true, DisplayName = "Repeats")]
+        [DataRow(false, DisplayName = "No Repeat")]
+        [DataTestMethod, TestCategory(Category)]
+        public void Register_HeldModifiers(bool isRepeat)
+        {
+            // For consistency with the Windows hotkey API, we want to trigger
+            // even if only the final key (and not any modifier key) is released,
+            // for example:
+            //
+            //      If the combination is [Ctrl+A], holding [Ctrl] down and
+            //      then repeatedly actuating and releasing [A] should trigger
+            //      the hotkey, ie:
+            //
+            //          Ctrl A A A A
+            //
+            //      Should result in the hotkey being triggered four times.
+            //
+            // This should occur irrespective of whether the hotkey is configured
+            // to fire repeatedly on continuous key actuation.
+            //
+            // It should also occur if the modifiers are released and then actuated
+            // again, for example:
+            //
+            //      If the combination is [Ctrl+Shift+A], then:
+            //
+            //          Ctrl Shift A A A
+            //          Ctrl Shift A Shift A Shift A
+            //
+            //      Should all result in the hotkey being triggered three times.
+
+            int firedCount = 0;
+
+            var deregisterer = _registrar.Register(
+                modifierKeys:   ModifierKeys.Alt | ModifierKeys.Shift,
+                key:            Key.X,
+                repeats:        isRepeat,
+                firedHandler:   (s, e) => firedCount++
+                );
+
+
+            // First actuation
+            _dummyEventSource.Actuate(
+                new[] { Key.RightAlt, Key.LeftShift, Key.X }, isRepeat: false
+                );
+
+            Assert.AreEqual(1, firedCount);
+
+            // Release, re-actuate final key
+            _dummyEventSource.Release(Key.X);
+            _dummyEventSource.Actuate(
+                new[] { Key.RightAlt, Key.LeftShift }, isRepeat: true
+                );
+            _dummyEventSource.Actuate(Key.X, isRepeat: false);
+
+            Assert.AreEqual(2, firedCount);
+
+            // Further repeated release, re-actuates
+            _dummyEventSource.Release(Key.X);
+            _dummyEventSource.Actuate(Key.X); // +1
+            _dummyEventSource.Release(Key.X);
+            _dummyEventSource.Actuate(Key.X); // +1
+            _dummyEventSource.Release(Key.X);
+
+            Assert.AreEqual(4, firedCount);
+
+
+            // Release, re-actuate modifier and final key
+            _dummyEventSource.Release(new[] { Key.LeftShift, Key.X });
+            _dummyEventSource.Actuate(Key.RightAlt, isRepeat: true);
+            _dummyEventSource.Actuate(new[] { Key.LeftShift, Key.X });
+
+            Assert.AreEqual(5, firedCount);
+
+
+            // Release, re-actuate final key and different modifier
+            _dummyEventSource.Release(new[] { Key.RightAlt, Key.X });
+            _dummyEventSource.Actuate(Key.LeftShift, isRepeat: true);
+            _dummyEventSource.Actuate(new[] { Key.RightAlt, Key.X });
+
+            Assert.AreEqual(6, firedCount);
+
+
+            // Actuation order still enforced
+            _dummyEventSource.Release(new[] { Key.LeftShift, Key.X });
+            _dummyEventSource.Actuate(new[] { Key.X, Key.LeftShift });
+
+            Assert.AreEqual(6, firedCount);
+
+            _dummyEventSource.Release(new[] { Key.RightAlt, Key.X });
+            _dummyEventSource.Actuate(new[] { Key.X, Key.RightAlt });
+
+            Assert.AreEqual(6, firedCount);
         }
 
         // The Windows hotkey registrar cannot accept two hotkeys with the same

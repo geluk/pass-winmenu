@@ -117,8 +117,15 @@ namespace PassWinmenu.Hotkeys
                             // If we have a match, trigger and reset
                             if (_keyState && (_modsState & this.Modifiers) == this.Modifiers)
                             {
+                                // We only reset the final key (and not the modifier keys)
+                                // state as this allows keypresses of [Ctrl A A A] for a
+                                // combination of [Ctrl+A] to trigger three times, in line
+                                // with the Windows API behaviour.
+                                //
+                                // Erroneous firing is mitigated by the modifier key state
+                                // being cleared anyway on key-up, and the enforcement of
+                                // actuation order.
                                 _keyState = false;
-                                _modsState = ModifierKeys.None;
 
                                 this.Triggered?.Invoke(this, eventArgs);
                             }
