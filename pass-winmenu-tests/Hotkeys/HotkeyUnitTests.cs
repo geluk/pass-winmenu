@@ -35,8 +35,8 @@ namespace PassWinmenu.Hotkeys
         {
             _registrar = new DummyHotkeyRegistrar();
 
-            _hotkey = Hotkey.Register(Modifiers, KeyCode, Repeats)
-                            .With(_registrar);
+            _hotkey = Hotkey.With(_registrar)
+                            .Register(Modifiers, KeyCode, Repeats);
 
             Hotkey.DefaultRegistrar = _defaultRegistrar;
         }
@@ -54,8 +54,6 @@ namespace PassWinmenu.Hotkeys
         {
             var b = Hotkey.Register(Modifiers, KeyCode, Repeats);
 
-            Assert.IsTrue(b is Hotkey.Builder);
-
             Assert.AreEqual(Modifiers, b.ModifierKeys);
             Assert.AreEqual(KeyCode,   b.Key);
             Assert.AreEqual(Repeats,   b.Repeats);
@@ -64,8 +62,6 @@ namespace PassWinmenu.Hotkeys
         public void Register_ReturnValue_KeyRepeats()
         {
             var b = Hotkey.Register(KeyCode, Repeats);
-
-            Assert.IsTrue(b is Hotkey.Builder);
 
             Assert.AreEqual(ModifierKeys.None, b.ModifierKeys);
             Assert.AreEqual(KeyCode, b.Key);
@@ -79,18 +75,18 @@ namespace PassWinmenu.Hotkeys
 
             var hkCount = _registrar.Hotkeys.Count;
 
-            Hotkey.Builder b = Hotkey.Register(KeyCode);
-
-            Hotkey hk = b;
+            Hotkey.Register(KeyCode);
 
             Assert.AreEqual(hkCount + 1, _registrar.Hotkeys.Count);
         }
         [TestMethod, TestCategory(Category)]
         public void Register_ExplicitRegistration()
         {
+            Hotkey.DefaultRegistrar = HotkeyRegistrars.Windows;
+
             var hkCount = _registrar.Hotkeys.Count;
 
-            Hotkey hk = Hotkey.Register(KeyCode).With(_registrar);
+            Hotkey hk = Hotkey.With(_registrar).Register(KeyCode);
 
             Assert.AreEqual(hkCount + 1, _registrar.Hotkeys.Count);
         }
