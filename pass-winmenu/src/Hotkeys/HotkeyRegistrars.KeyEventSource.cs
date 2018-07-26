@@ -162,12 +162,11 @@ namespace PassWinmenu.Hotkeys
 
 
             /// <summary>
-            /// Retrieves a <see cref="KeyEventSource"/> for a particular
-            /// source of keyboard-related events, creating one if one does not
-            /// already exist.
+            /// Creates a <see cref="KeyEventSource"/> for a particular source of 
+            /// keyboard-related events.
             /// </summary>
             /// <param name="eventSource">
-            /// The source of events for which to retrieve a registrar.
+            /// The source of events for which to create a registrar.
             /// </param>
             /// <returns>
             /// A registrar for hotkeys for the specified
