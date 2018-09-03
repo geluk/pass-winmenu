@@ -265,26 +265,6 @@ namespace PassWinmenu.Hotkeys
                 => this.WithHandler(handler, cumulative: false);
 
             /// <summary>
-            /// Provides access to <see cref="Hotkey.Triggered"/>. Operations
-            /// on this event will trigger hotkey building.
-            /// </summary>
-            public event EventHandler Triggered
-            {
-                add
-                {
-                    _retrieve(out var hk);
-
-                    hk.Triggered += value;
-                }
-                remove
-                {
-                    _retrieve(out var hk);
-
-                    hk.Triggered -= value;
-                }
-            }
-
-            /// <summary>
             /// Specifies a registrar with which to register the hotkey.
             /// </summary>
             /// <param name="registrar">
@@ -310,17 +290,6 @@ namespace PassWinmenu.Hotkeys
                 _registrar = registrar ?? DefaultRegistrar;
 
                 return this;
-
-                //Hotkey hotkey = null;
-
-                //hotkey = new Hotkey((registrar ?? DefaultRegistrar).Register(
-                //    modifierKeys: this.Modifiers,
-                //    key:          this.Key,
-                //    repeats:      this.Repeats,
-                //    firedHandler: (s, e) => hotkey._firedHandler(s, e)
-                //    ), this.Modifiers, this.Key, this.Repeats);
-
-                //return hotkey;
             }
 
             /// <summary>
@@ -509,7 +478,6 @@ namespace PassWinmenu.Hotkeys
 
             return new HotkeyRegistration(registrar);
         }
-
 
 
         // Provides the callback to the registrar to deregister the hotkey.
