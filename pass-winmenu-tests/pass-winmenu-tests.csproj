@@ -58,6 +58,7 @@
     <Compile Include="Hotkeys\KeyEventSourceRegistrarTests.cs" />
     <Compile Include="Parsing\ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UdateChecking\DummyUpdateSource.cs" />
     <Compile Include="Utilities\DisposableTests.cs" />
     <Compile Include="Utilities\ExtensionMethods\KeyEventArgsExtensionsTests.cs" />
   </ItemGroup>
