@@ -138,10 +138,11 @@
     <Compile Include="src\PinentryWatcher.cs" />
     <Compile Include="src\UpdateChecking\ChocolateyUpdateSource.cs" />
     <Compile Include="src\UpdateChecking\GitHub\GitHubUpdateSource.cs" />
-    <Compile Include="src\UpdateChecking\GitHub\Releases.cs" />
+    <Compile Include="src\UpdateChecking\GitHub\ReleasesResponse.cs" />
     <Compile Include="src\UpdateChecking\IUpdateSource.cs" />
     <Compile Include="src\UpdateChecking\ProgramVersion.cs" />
     <Compile Include="src\UpdateChecking\UpdateChecker.cs" />
+    <Compile Include="src\UpdateChecking\UpdateException.cs" />
     <Compile Include="src\Utilities\Disposable.cs" />
     <Compile Include="src\Utilities\ExtensionMethods\DirectoryInfoExtensions.cs" />
     <Compile Include="src\Utilities\ExtensionMethods\KeyEventArgsExtensions.cs" />

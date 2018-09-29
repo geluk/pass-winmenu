@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using LibGit2Sharp;
+using McSherry.SemanticVersioning;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using PassWinmenu.Hotkeys;
 using PassWinmenu.Configuration;
 using PassWinmenu.ExternalPrograms;
+using PassWinmenu.UpdateChecking;
+using PassWinmenu.UpdateChecking.GitHub;
 using PassWinmenu.Windows;
 using YamlDotNet.Core;
 using Application = System.Windows.Forms.Application;
@@ -23,13 +30,14 @@ namespace PassWinmenu
 {
 	internal class Program : Form
 	{
-		private string Version => EmbeddedResources.Version;
+		public static string Version => EmbeddedResources.Version;
 		public const string LastConfigVersion = "1.7";
 		private const string EncryptedFileExtension = ".gpg";
 		private const string PlaintextFileExtension = ".txt";
 		private readonly NotifyIcon icon = new NotifyIcon();
 		private readonly HotkeyManager hotkeys;
 		private readonly StartupLink startupLink = new StartupLink("pass-winmenu");
+		private UpdateChecker updateChecker;
 		private Git git;
 		private PasswordManager passwordManager;
 
@@ -73,6 +81,8 @@ namespace PassWinmenu
 			Log.Send("------------------------------");
 
 			AssignHotkeys(hotkeys);
+
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 			
 			var gpg = new GPG();
 			gpg.FindGpgInstallation(ConfigManager.Config.Gpg.GpgPath);
@@ -110,6 +120,26 @@ namespace PassWinmenu
 					ShowErrorWindow($"Failed to open the password store Git repository ({e.GetType().Name}: {e.Message}). Git support will be disabled.");
 				}
 			}
+
+#if CHOCOLATEY
+			var updateSource = new ChocolateyUpdateSource();
+#else
+			var updateSource = new GitHubUpdateSource();
+#endif
+			var versionString = Version.Split('-').First();
+			updateChecker = new UpdateChecker(updateSource, SemanticVersion.Parse(versionString, ParseMode.Lenient));
+			updateChecker.UpdateAvailable += (sender, args) =>
+			{
+				RaiseNotification($"A new update ({args.Version.VersionNumber.ToString(SemanticVersionFormat.Concise)}) is available.", ToolTipIcon.Info);
+				icon.ContextMenuStrip.Items.Insert(1, new ToolStripMenuItem("Download update", null, (o, eventArgs) =>
+				{
+					Process.Start(args.Version.DownloadLink.ToString());
+				})
+				{
+					BackColor = Color.Beige,
+				});
+			};
+			updateChecker.Start();
 		}
 
 		/// <summary>

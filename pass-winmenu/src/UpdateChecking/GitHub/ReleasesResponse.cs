@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using McSherry.SemanticVersioning;
 
 namespace PassWinmenu.UpdateChecking.GitHub
 {
-
 	public class ReleasesResponse
 	{
 		public Release[] Releases { get; set; }
@@ -32,6 +32,7 @@ namespace PassWinmenu.UpdateChecking.GitHub
 		public string TarballUrl { get; set; }
 		public string ZipballUrl { get; set; }
 		public string Body { get; set; }
+		public SemanticVersion Version => SemanticVersion.Parse(TagName, ParseMode.Lenient);
 	}
 
 	public class Author
