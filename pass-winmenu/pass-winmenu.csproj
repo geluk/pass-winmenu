@@ -136,7 +136,7 @@
     <Compile Include="src\PasswordGeneration\PasswordGenerator.cs" />
     <Compile Include="src\PasswordManager.cs" />
     <Compile Include="src\PinentryWatcher.cs" />
-    <Compile Include="src\UpdateChecking\ChocolateyUpdateSource.cs" />
+    <Compile Include="src\UpdateChecking\Chocolatey\ChocolateyUpdateSource.cs" />
     <Compile Include="src\UpdateChecking\GitHub\GitHubUpdateSource.cs" />
     <Compile Include="src\UpdateChecking\GitHub\ReleasesResponse.cs" />
     <Compile Include="src\UpdateChecking\IUpdateSource.cs" />

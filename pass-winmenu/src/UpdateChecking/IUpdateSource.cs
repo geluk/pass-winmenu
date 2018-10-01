@@ -10,6 +10,11 @@ namespace PassWinmenu.UpdateChecking
 	internal interface IUpdateSource
 	{
 		/// <summary>
+		/// Does the update source require an internet connection to check for updates?
+		/// </summary>
+		bool RequiresConnectivity { get; }
+
+		/// <summary>
 		/// Fetches version information for the latest release.
 		/// </summary>
 		/// <returns>A <see cref="ProgramVersion"/> describing the latest release.</returns>

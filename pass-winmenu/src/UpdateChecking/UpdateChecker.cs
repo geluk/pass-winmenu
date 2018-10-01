@@ -35,10 +35,6 @@ namespace PassWinmenu.UpdateChecking
 			{
 				AutoReset = true,
 			};
-#if DEBUG
-			timer.AutoReset = false;
-			timer.Interval = 1000;
-#endif
 
 			timer.Elapsed += (sender, args) =>
 			{
@@ -63,7 +59,7 @@ namespace PassWinmenu.UpdateChecking
 		/// </returns>
 		private ProgramVersion? CheckForUpdates()
 		{
-			if (!GetConnectivity())
+			if (UpdateSource.RequiresConnectivity && !GetConnectivity())
 			{
 				return null;
 			}

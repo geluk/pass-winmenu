@@ -18,6 +18,8 @@ namespace PassWinmenu.UpdateChecking.GitHub
 		private const string UpdateUrl = "https://api.github.com/repos/Baggykiin/pass-winmenu/releases";
 		private readonly JsonSerializerSettings settings;
 
+		public bool RequiresConnectivity => true;
+
 		public GitHubUpdateSource()
 		{
 			settings = new JsonSerializerSettings

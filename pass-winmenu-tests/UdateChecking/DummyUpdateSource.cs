@@ -12,6 +12,8 @@ namespace PassWinmenu.UdateChecking
 		public ProgramVersion LatestVersion { get; set; }
 		public List<ProgramVersion> Versions { get; set; }
 
+		public bool RequiresConnectivity => false;
+
 		public ProgramVersion GetLatestVersion()
 		{
 			return LatestVersion;

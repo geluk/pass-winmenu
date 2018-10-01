@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PassWinmenu.UpdateChecking
+namespace PassWinmenu.UpdateChecking.Chocolatey
 {
 	internal class ChocolateyUpdateSource : IUpdateSource
 	{
+		public bool RequiresConnectivity => true;
+
 		public ProgramVersion GetLatestVersion()
 		{
 			throw new NotImplementedException();
