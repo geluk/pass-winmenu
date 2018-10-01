@@ -35,6 +35,8 @@ namespace PassWinmenu.Configuration
 
 		public NotificationConfig Notifications { get; set; } = new NotificationConfig();
 
+		public ApplicationConfig Application { get; set; } = new ApplicationConfig();
+
 		public InterfaceConfig Interface { get; set; } = new InterfaceConfig();
 
 		public bool CreateLogFile { get; set; } = false;

@@ -120,6 +120,12 @@ namespace PassWinmenu
 					ShowErrorWindow($"Failed to open the password store Git repository ({e.GetType().Name}: {e.Message}). Git support will be disabled.");
 				}
 			}
+			InitialiseUpdateChecker();
+		}
+
+		private void InitialiseUpdateChecker()
+		{
+			if (!ConfigManager.Config.Application.UpdateChecking.CheckForUpdates) return;
 
 #if CHOCOLATEY
 			var updateSource = new ChocolateyUpdateSource();
@@ -127,10 +133,16 @@ namespace PassWinmenu
 			var updateSource = new GitHubUpdateSource();
 #endif
 			var versionString = Version.Split('-').First();
+
 			updateChecker = new UpdateChecker(updateSource, SemanticVersion.Parse(versionString, ParseMode.Lenient));
 			updateChecker.UpdateAvailable += (sender, args) =>
 			{
-				RaiseNotification($"A new update ({args.Version.VersionNumber.ToString(SemanticVersionFormat.Concise)}) is available.", ToolTipIcon.Info);
+				// If the update contains important vulnerability fixes, always display a notification.
+				if (ConfigManager.Config.Notifications.Types.UpdateAvailable || args.Version.Important)
+				{
+					RaiseNotification($"A new update ({args.Version.VersionNumber.ToString(SemanticVersionFormat.Concise)}) is available.", ToolTipIcon.Info);
+				}
+
 				icon.ContextMenuStrip.Items.Insert(1, new ToolStripMenuItem("Download update", null, (o, eventArgs) =>
 				{
 					Process.Start(args.Version.DownloadLink.ToString());

@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Configuration\Classes\ApplicationConfig.cs" />
     <Compile Include="src\Configuration\Classes\GitConfig.cs" />
     <Compile Include="src\Configuration\Classes\GpgAgentConfig.cs" />
     <Compile Include="src\Configuration\Classes\GpgAgentConfigFile.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="src\Configuration\Classes\PasswordStoreConfig.cs" />
     <Compile Include="src\Configuration\Classes\StyleConfig.cs" />
     <Compile Include="src\Configuration\Classes\SyncMode.cs" />
+    <Compile Include="src\Configuration\Classes\UpdateCheckingConfig.cs" />
     <Compile Include="src\Configuration\Classes\UsernameDetectionConfig.cs" />
     <Compile Include="src\Configuration\Classes\UsernameDetectionMethod.cs" />
     <Compile Include="src\Configuration\Classes\UsernameDetectionOptions.cs" />

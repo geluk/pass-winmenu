@@ -187,8 +187,21 @@ notifications:
         git-push: true
         # ...changes are pulled from Git
         git-pull: true
+        # ...a new update can be downloaded
+        update-available: true
 
-    
+
+application:
+    update-checking:
+        # Should we check for updates?
+        # This will, when an update is available, add a menu entry that, when
+        # clicked, will send you to the GitHub release page for the update.
+        # It is recommended to keep this enabled, as it allows pass-winmenu to
+        # notify you in case any potential vulnerabilities have been fixed
+        # in an upcoming update.
+        check-for-updates: true
+
+
 interface:
     # If set to true, the menu will be opened on the same screen the mouse cursor
     # is currently on. If set to false, it will be opened on the primary screen.
