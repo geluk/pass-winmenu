@@ -14,6 +14,7 @@ namespace PassWinmenu.UpdateChecking
 
 		public IUpdateSource UpdateSource { get; }
 		public SemanticVersion CurrentVersion { get; }
+		public ProgramVersion? LatestVersion { get; private set; }
 		public TimeSpan CheckInterval { get; set; } = TimeSpan.FromHours(1);
 
 		public event EventHandler<UpdateAvailableEventArgs> UpdateAvailable;
@@ -44,6 +45,7 @@ namespace PassWinmenu.UpdateChecking
 				// Stop checking for updates once we've found one.
 				timer.Stop();
 				timer.Dispose();
+				LatestVersion = update;
 				NotifyUpdate(update.Value);
 			};
 			timer.Start();

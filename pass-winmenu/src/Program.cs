@@ -140,16 +140,9 @@ namespace PassWinmenu
 				// If the update contains important vulnerability fixes, always display a notification.
 				if (ConfigManager.Config.Notifications.Types.UpdateAvailable || args.Version.Important)
 				{
+					icon.ContextMenuStrip.Items[0].Visible = true;
 					RaiseNotification($"A new update ({args.Version.VersionNumber.ToString(SemanticVersionFormat.Concise)}) is available.", ToolTipIcon.Info);
 				}
-
-				icon.ContextMenuStrip.Items.Insert(1, new ToolStripMenuItem("Download update", null, (o, eventArgs) =>
-				{
-					Process.Start(args.Version.DownloadLink.ToString());
-				})
-				{
-					BackColor = Color.Beige,
-				});
 			};
 			updateChecker.Start();
 		}
@@ -503,6 +496,13 @@ namespace PassWinmenu
 			var menu = new ContextMenuStrip();
 			menu.Items.Add(new ToolStripLabel("pass-winmenu " + Version));
 			menu.Items.Add(new ToolStripSeparator());
+
+			var downloadUpdate = new ToolStripMenuItem("Download Update");
+			downloadUpdate.Click += (sender, args) => Process.Start(updateChecker.LatestVersion.Value.ReleaseNotes.ToString());
+			downloadUpdate.BackColor = Color.Beige;
+			//downloadUpdate.Visible = false;
+
+			menu.Items.Add(downloadUpdate);
 			menu.Items.Add("Decrypt Password", null, (sender, args) => Task.Run(() => DecryptPassword(true, false, false)));
 			menu.Items.Add("Add new Password", null, (sender, args) => Task.Run((Action)AddPassword));
 			menu.Items.Add("Edit Password File", null, (sender, args) => Task.Run(() => EditPassword()));

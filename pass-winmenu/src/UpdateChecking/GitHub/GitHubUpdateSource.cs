@@ -35,20 +35,24 @@ namespace PassWinmenu.UpdateChecking.GitHub
 		{
 			var response = FetchReleases();
 			var latest = response.OrderByDescending(r => r.Version).First();
+			return ToProgramVersion(latest);
+		}
 
-			var version = new ProgramVersion
+		private ProgramVersion ToProgramVersion(Release release)
+		{
+			return new ProgramVersion
 			{
-				VersionNumber = latest.Version,
-				DownloadLink = new Uri(latest.HtmlUrl),
-				ReleaseDate = latest.PublishedAt,
-				ReleaseNotes = new Uri(latest.HtmlUrl),
+				VersionNumber = release.Version,
+				DownloadLink = new Uri(release.HtmlUrl),
+				ReleaseDate = release.PublishedAt,
+				ReleaseNotes = new Uri(release.HtmlUrl),
 			};
-			return version;
 		}
 
 		public IEnumerable<ProgramVersion> GetAllReleases()
 		{
-			throw new NotImplementedException();
+			var releases = FetchReleases();
+			return releases.Select(ToProgramVersion);
 		}
 
 		private Release[] FetchReleases()
