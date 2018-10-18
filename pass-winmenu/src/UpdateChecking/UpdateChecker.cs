@@ -39,27 +39,35 @@ namespace PassWinmenu.UpdateChecking
 
 			timer.Elapsed += (sender, args) =>
 			{
-				var update = CheckForUpdates();
-				if (update == null) return;
-
-				// Stop checking for updates once we've found one.
-				timer.Stop();
-				timer.Dispose();
-				LatestVersion = update;
-				NotifyUpdate(update.Value);
+				CheckForUpdates();
 			};
 			timer.Start();
 		}
 
+		/// <summary>
+		/// Checks for any available updates, raising <see cref="UpdateAvailable"/> if an update is found.
+		/// </summary>
+		public void CheckForUpdates()
+		{
+			var update = GetUpdate();
+			if (update == null) return;
+
+			// Stop automatic update checking if we've found an update.
+			timer.Stop();
+			timer.Dispose();
+			LatestVersion = update;
+			NotifyUpdate(update.Value);
+		}
+
 
 		/// <summary>
-		/// Checks whether an update is available.
+		/// Checks for an available update.
 		/// </summary>
 		/// <returns>
 		/// A <see cref="ProgramVersion"/> representing the available update,
 		/// or <value>nul</value> if no update is available.
 		/// </returns>
-		private ProgramVersion? CheckForUpdates()
+		private ProgramVersion? GetUpdate()
 		{
 			if (UpdateSource.RequiresConnectivity && !GetConnectivity())
 			{

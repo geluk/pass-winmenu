@@ -71,7 +71,6 @@ namespace PassWinmenu.UpdateChecking.GitHub
 				var responseText = new StreamReader(stream).ReadToEnd();
 				return JsonConvert.DeserializeObject<Release[]>(responseText, settings);
 			}
-
 		}
 
 		private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

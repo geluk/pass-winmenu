@@ -8,10 +8,12 @@
 		GitPull,
 		GitPush,
 		OpenShell,
-		ShowDebugInfo,
 		SelectNext,
 		SelectPrevious,
 		SelectFirst,
-		SelectLast
+		SelectLast,
+		// Debugging actions
+		ShowDebugInfo,
+		CheckForUpdates,
 	}
 }

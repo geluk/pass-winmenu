@@ -80,8 +80,6 @@ namespace PassWinmenu
 			Log.Send($"Starting pass-winmenu {Version}");
 			Log.Send("------------------------------");
 
-			AssignHotkeys(hotkeys);
-
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 			
 			var gpg = new GPG();
@@ -121,6 +119,8 @@ namespace PassWinmenu
 				}
 			}
 			InitialiseUpdateChecker();
+
+			AssignHotkeys(hotkeys);
 		}
 
 		private void InitialiseUpdateChecker()
@@ -310,6 +310,9 @@ namespace PassWinmenu
 							break;
 						case HotkeyAction.ShowDebugInfo:
 							hotkeyManager.AddHotKey(keys, ShowDebugInfo);
+							break;
+						case HotkeyAction.CheckForUpdates:
+							hotkeyManager.AddHotKey(keys, updateChecker.CheckForUpdates);
 							break;
 					}
 				}
