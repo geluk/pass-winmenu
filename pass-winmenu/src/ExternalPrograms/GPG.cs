@@ -273,8 +273,12 @@ namespace PassWinmenu.ExternalPrograms
 		{
 			if (recipients == null) recipients = new string[0];
 			var recipientList = string.Join(" ", recipients.Select(r => $"--recipient \"{r}\""));
-
-			var result = CallGpg($"--output \"{outputFile}\" {recipientList} --encrypt", data);
+			var pgpArgs = $"--output \"{outputFile}\" {recipientList} --encrypt";
+			if (File.Exists(outputFile))
+			{
+				pgpArgs += " --yes";
+			}
+			var result = CallGpg(pgpArgs, data);
 			VerifyEncryption(result);
 		}
 
