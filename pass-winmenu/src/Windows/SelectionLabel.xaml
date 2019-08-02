@@ -1,0 +1,9 @@
+<UserControl x:Class="PassWinmenu.Windows.SelectionLabel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:ClassModifier="internal">
+	<Border Name="LabelBorder"
+	        Padding="1,1,1,1">
+		<TextBlock Name="LabelText"/>
+	</Border>
+</UserControl>

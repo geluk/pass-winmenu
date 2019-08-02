@@ -1,0 +1,11 @@
+--- ..\embedded\default-config.yaml	2018-10-27 15:22:59.476619300 +0200
++++ .\packaged-config.yaml	2018-10-27 16:04:59.293968400 +0200
+@@ -121,7 +121,7 @@
+     # Path to your gpg.exe. If set to its default of null, pass-winmenu
+     # will try to look for the file in its default location.
+     # If you have added GPG to your PATH, you can also set this to 'gpg'.
+-    gpg-path: null
++    gpg-path: 'lib\GnuPG\bin\gpg.exe'
+     # If the GNUPGHOME environment variable is set, GPG will use that path to
+     # store its keys and settings. Otherwise, GPG will choose its own location.
+     # If you are unable to alter the GNUPGHOME environment variable (or if you

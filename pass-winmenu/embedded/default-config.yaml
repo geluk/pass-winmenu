@@ -1,0 +1,354 @@
+# This is the default configuration file for pass-winmenu.
+# If your password store is is located at %userprofile%\.password-store
+# and GPG (not GPG4win) is installed on your computer, this settings file will
+# work out of the box. Otherwise, you'll have to tweak it a bit.
+
+# All values in this file are set to pass-winmenu's default settings,
+# so feel free to delete them from this file; they're only here
+# for your reference.
+
+
+# These settings determine the location and format of your password store.
+password-store:
+    # The path to your password store. Can be relative or absolute, and
+    # %-variables (as used in Windows Explorer) are supported.
+    location: '%userprofile%\.password-store'
+    # A regex string against which all filenames in the password directory are
+    # compared. All matching files are considered password files.
+    password-file-match: '.*\.gpg$'
+    # Only consider the first line in the password file to be the actual password;
+    # all other lines are considered metadata. This is the recommended behaviour,
+    # as many password managers for pass will work the same way.
+    first-line-only: true
+
+    password-generation:
+        # Default length for newly generated passwords.
+        length: 20
+        # Defines which character groups can be used to generate passwords.
+        # Each entry represents a group that can be toggled individually in the
+        # password generation window.
+        character-groups:
+          - 
+            # The category name to be displayed in the password generation window.
+            name: Symbols
+            # The set of characters this group contains.
+            characters: '!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~'
+            # When this is set to false, the checkbox for this group will be
+            # set to unchecked by default.
+            enabled: true
+          - 
+            name: Numeric
+            characters: '0123456789'
+            enabled: true
+          - 
+            name: Lowercase
+            characters: 'abcdefghijklmnopqrstuvwxyz'
+            enabled: true
+          - 
+            name: Uppercase
+            characters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            enabled: true
+          - 
+            name: Whitespace
+            characters: ' '
+            enabled: false
+        # This template allows you to alter the default metadata that's
+        # added to new password files. Note that this is a multiline string;
+        # any leading spaces will be ignored.
+        # A few variables can be inserted into the string:
+        #  - $filename (The name of the password file, without .gpg extension
+        #               and without its path.)
+        #  - $date     (The current date, formatted as yyyy-MM-dd)
+        #  - $time     (The current time, formatted as HH:mm:ss)
+        default-content: |
+            Username: 
+        # Example configuration (uncomment to enable):
+#        default-content: |
+#            Username: $filename
+#            Created: $date $time
+
+    # If you have added a hotkey where pass-winmenu enters a username and
+    # a password, you can choose here how you want the application to determine
+    # the correct username. Uncomment whichever method you prefer to enable it.
+    # Make sure the other methods are commented out!
+    username-detection:
+        # Use the filename of the password file as the username
+#        method: 'filename'
+
+        # Read the text on a specified line in the password file and use that
+        # as the username. Note that reading line number 1 (the password line)
+        # is not supported.
+#        method: 'line-number'
+#        options:
+#            line-number: 2
+
+        # Use a regex to extract the username from the password file.
+        # The username should be placed in a capturing group named 'username',
+        # which can be done by putting ?<username> at the beginning of the
+        # capturing group.
+        method: 'regex'
+        options:
+            regex: '^[Uu]sername: ((?<username>.*)\r|(?<username>.*))$'
+            regex-options:
+                ignore-case: false
+                multiline: true
+                singleline: false
+
+# Settings for git-based password stores
+git:
+    # Pass-winmenu will automatically commit new and changed passwords if it
+    # detects that your password store is a git repository, as well as providing
+    # options for pushing to/pulling from the remote repository.
+    # You can disable this feature by setting the following option to false:
+    use-git: true
+    # Either 'builtin' or 'native-git'. 'builtin', the default option, will use
+    # the Git library to sync your password repository. This library, however,
+    # has several limitations. For instance, SSH remotes are not supported.
+    # By setting this value to 'native-git', pass-winmenu will use your native
+    # Git installation instead.
+    sync-mode: builtin
+    # Path to the Git executable that should be used. Only used when sync-mode
+    # is set to 'native-git'.
+    git-path: git
+    # Path to the ssh client executable that should be used. Only used when
+    # sync-mode is set to 'native-git'. This is useful if you have a passphrase
+    # on your key and want to use plink.exe/pageant.exe to supply the key.
+    # Example: 'C:\Program Files\PuTTY\plink.exe'
+    ssh-path: null
+
+# GPG-related settings
+gpg:
+    # Path to your gpg.exe. If set to its default of null, pass-winmenu
+    # will try to look for the file in its default location.
+    # If you have added GPG to your PATH, you can also set this to 'gpg'.
+    gpg-path: null
+    # If the GNUPGHOME environment variable is set, GPG will use that path to
+    # store its keys and settings. Otherwise, GPG will choose its own location.
+    # If you are unable to alter the GNUPGHOME environment variable (or if you
+    # have a separate GPG homedir that isn't related to the one used for your
+    # password files), you can have pass-winmenu pass along a custom value
+    # to GPG. For example, like so:
+    #   gnupghome-override: '%userprofile%\.gnupg'
+    # This normally shouldn't be necessary.
+    # The GNUPGHOME environment variable is not overridden when the value is null.
+    gnupghome-override: null
+    # On multi-monitor screens, pinentry often fails to make itself the foreground
+    # window when it asks for your password. When enabled, this option will allow
+    # pass-winmenu to detect when this happens, and force the pinentry window to the
+    # foreground.
+    pinentry-fix: false
+    gpg-agent:
+        # Gpg-agent can have a pretty long startup time on Windows. This option allows
+        # the gpg-agent to be started alongside pass-winmenu so it'll be ready when
+        # you need it.
+        preload: true
+        config:
+            # Set this to true to allow pass-winmenu to manage some configuration keys in your
+            # `gpg-agent.conf` file, allowing you to configure features like password timeout.
+            allow-config-management: false
+            # Add the following configuration keys to `gpg-agent.conf`:
+            keys:
+                # Remember your GPG passphrase for up to one hour.
+                # Every time you decrypt a password within this one-hour timespan, the timer will reset.
+                default-cache-ttl: 7200
+                # This is the maximum amount of time gpg-agent will remember your passphrase
+                # Once this amount of time has expired, gpg-agent will always ask you to re-enter it.
+                max-cache-ttl: 127800
+
+output:
+    # If your keyboard has dead keys enabled (type ' + e for é), this should
+    # be set to true, otherwise usernames/passwords might not be entered
+    # correctly.
+    dead-keys: false
+
+# Here you can map hotkeys to various actions. Supported actions are:
+# - decrypt-password
+#     available options:
+#      - copy-to-clipboard: (true/false)
+#        Copy the password to your clipboard. Note that in Windows 10 version
+#        1809 and up, clipboard history may be enabled, which may preserve
+#        copied passwords. Use with caution.
+#      - type-username: (true/false)
+#        Type the username into the topmost window.
+#      - type-password: (true/false)
+#        Type the password into the topmost window. If the username was also
+#        typed, it will be followed by a tab before the password is entered.
+# - add-password
+# - edit-password
+# - decrypt-metadata
+#     Decrypt the metadata of a password file (all lines after the first line).
+#     available options:
+#      - copy-to-clipboard: (true/false)
+#        Copy the metadata.
+#      - type: (true/false)
+#        Type all metadata into the topmost window.
+# - password-field
+#     Get the value of a field from the metadata of a password file.
+#     Fields should have a name followed by a colon and a value.
+#     For instance:
+#        Recovery-Key: 5c673074-d441-4579-bf40-2dacc3a43d8f
+#     available options:
+#      - copy-to-clipboard: (true/false)
+#        Copy the value of the field to the clipboard.
+#      - field-name: <fieldname>
+#        Name of the field to decrypt. If this is not specified, you will be
+#        prompted with a menu where you can choose the correct field.
+#      - type: (true/false)
+#        Type the value of the field into the topmost window.
+# - git-pull
+# - git-push
+# - open-shell
+# Actions can be further configured using the 'options' variable.
+#
+# The default configuration has one hotkey for copying the password to your
+# clipboard, and one hotkey for automatically entering your username and
+# password into the topmost window.
+hotkeys:
+  - 
+    hotkey: 'ctrl alt p'
+    action: 'decrypt-password'
+    options:
+        copy-to-clipboard: true
+        type-username: false
+        type-password: false
+  - 
+    hotkey: 'ctrl alt shift p'
+    action: 'decrypt-password'
+    options:
+        copy-to-clipboard: true
+        type-username: true
+        type-password: true
+    # Example configuration of an 'add password' hotkey. Uncomment to enable.
+#  - 
+#    hotkey: 'ctrl alt shift n'
+#    action: 'add-password'
+    # Example configuration of a 'decrypt key' hotkey. Uncomment to enable.
+#  - 
+#    hotkey: 'ctrl alt shift u'
+#    action: 'add-password'
+
+# Notification-related settings.
+notifications:
+    # Set this to false to disable all notifications. Because this suppresses
+    # error notifications as well, it is usually better to disable
+    # notifications by type, using the 'types' setting below.
+    enabled: true
+    # Send a notification when...
+    types:
+        # ...a password is copied to the clipboard:
+        password-copied: true
+        # ...a new password has been generated:
+        password-generated: true
+        # ...a password has been edited:
+        password-updated: true
+        # ...changes are pushed to Git:
+        git-push: true
+        # ...changes are pulled from Git:
+        git-pull: true
+        # ...a new update can be downloaded:
+        update-available: true
+        # ...a new update containing an important vulnerability fix
+        #    can be downloaded:
+        important-update-available: true
+
+application:
+    # Automatically reload the configuration file when it changes.
+    reload-config: true
+    update-checking:
+        # Should we check for updates?
+        # This will, when an update is available, add a menu entry that, when
+        # clicked, will send you to the GitHub release page for the update.
+        check-for-updates: true
+        # Set this to true if you also want to check for prereleases.
+        allow-prereleases: false
+
+interface:
+    # If set to true, the menu will be opened on the same screen the mouse cursor
+    # is currently on. If set to false, it will be opened on the primary screen.
+    follow-cursor: true
+    # The directory separator that will be used to separate directories and files
+    # in the password menu. It's purely a visual indicator, so it can be set to
+    # whatever character (or sequence of characters) you like.
+    directory-separator: '/'
+
+    password-editor:
+        # Use the built-in password editor. You can set this to false if you want
+        # to use a different text editor instead. In that case, pass-winmenu will
+        # launch your default text editor for .txt files.
+        # Using a custom text editor is not recommended, as this will temporarily
+        # create a plaintext file containing your password, which may physically
+        # remain on your disk even after the file has been deleted.
+        use-builtin: true
+        # If you do want to use your own text editor, and you have access to a
+        # volatile storage medium (for instance, a RAM disk), you can specify
+        # a path within that storage location here, in which case it will be used
+        # to temporarily store plaintext password files while they are being edited.
+        # Example:
+        #temporary-file-directory: 'Z:\pass-winmenu-temp\'
+        # By default, we use AppData\Local\Temp:
+        temporary-file-directory: '%temp%'
+
+
+    # Amount of time (in seconds) your passwords should remain on the clipboard.
+    clipboard-timeout: 30
+    # Restore previous clipboard contents after the password has been cleared.
+    restore-clipboard: true
+
+    hotkeys:
+    # Configure hotkeys for the password selection menu.
+    # Supported actions are 'select-next', 'select-previous', 'select-first',
+    # and 'select-last'.
+      - 
+        # Selects the next entry in the list
+        hotkey: 'tab'
+        action: 'select-next'
+      - 
+        # Selects the previous entry in the list
+        hotkey: 'shift tab'
+        action: 'select-previous'
+
+    # Style settings.
+    # All colour strings must be formatted as hexadecimal ARGB strings,
+    # such as #AA00FF44. To 'unset' a colour, a fully transparent colour
+    # can be used, which is any colour starting with #00.
+    # Alternatively, you can use '[accent]' to reference the user-defined
+    # accent colour (available on Windows 8 and 10).
+    style:
+        orientation: 'vertical'
+        # Number of items between the curernt selection and the border
+        # before the window should start scrolling.
+        scroll-boundary: 0
+        font-size: 14
+        font-family: 'Consolas'
+        background-colour: '#FF202020'
+        border-colour: '[accent]'
+        border-width: [1]
+        caret-colour: '#FFDDDDDD'
+        # Offset and dimensions of the menu.
+        offset-left: 40%
+        offset-top: 40%
+        width: 20%
+        height: 20%
+
+        # This determines the styling of the search text.
+        search:
+            text-colour: '#FFDDDDDD'
+            background-colour: '#00FFFFFF'
+            border-colour: '#FF000000'
+            border-width: [0, 0, 1, 0]
+        # This determines the styling of all unselected options.
+        options:
+            text-colour: '#FFDDDDDD'
+            background-colour: '#00FFFFFF'
+            border-colour: '#FF000000'
+            border-width: [0]
+        # This determines the styling of the current selection.
+        selection:
+            text-colour: '#FFFFFFFF'
+            background-colour: '[accent]'
+            border-colour: '#FF000000'
+            border-width: [0]
+
+# Used to determine whether a config upgrade is needed.
+# Do not change this value manually.
+config-version: 1.7

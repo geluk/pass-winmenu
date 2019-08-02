@@ -1,0 +1,19 @@
+--- ..\embedded\default-config.yaml	2018-10-27 15:22:59.476619300 +0200
++++ .\packaged-config-nogpg.yaml	2018-10-27 16:17:35.973932700 +0200
+@@ -1,6 +1,6 @@
+ # This is the default configuration file for pass-winmenu.
+ # If your password store is is located at %userprofile%\.password-store
+-# and GPG (not GPG4win) is installed on your computer, this settings file will
++# and GPG is reachable from your PATH, this settings file will
+ # work out of the box. Otherwise, you'll have to tweak it a bit.
+ 
+ # All values in this file are set to pass-winmenu's default settings,
+@@ -121,7 +121,7 @@
+     # Path to your gpg.exe. If set to its default of null, pass-winmenu
+     # will try to look for the file in its default location.
+     # If you have added GPG to your PATH, you can also set this to 'gpg'.
+-    gpg-path: null
++    gpg-path: 'gpg'
+     # If the GNUPGHOME environment variable is set, GPG will use that path to
+     # store its keys and settings. Otherwise, GPG will choose its own location.
+     # If you are unable to alter the GNUPGHOME environment variable (or if you

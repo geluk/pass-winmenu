@@ -1,0 +1,42 @@
+version: '{branch}.{build}'
+image: Visual Studio 2017
+configuration: Release
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: $(assembly_version)
+  assembly_file_version: $(assembly_version)
+  assembly_informational_version: $(assembly_version)
+install:
+- ps: >-
+    $env:assembly_version=$(git describe --abbrev=0 --tags).Substring(1)
+
+    echo "Assembly version: $env:assembly_version"
+
+
+    if($(git tag --contains HEAD)) {
+      echo "Tag found, artifacts will be added to GitHub release"
+      $env:deploy=1
+    }
+before_build:
+- ps: nuget restore
+build:
+  verbosity: minimal
+after_build:
+- ps: "cd pass-winmenu\n.\\build-package.ps1 -Package -Compress -Clean \n.\\build-package.ps1 -Package -Compress -Clean -WithGpg"
+artifacts:
+- path: pass-winmenu/bin
+- path: pass-winmenu/bin/pass-winmenu-nogpg.zip
+  name: pass-winmenu
+- path: pass-winmenu/bin/pass-winmenu.zip
+  name: pass-winmenu
+- path: pass-winmenu/bin/Release/pass-winmenu.exe
+deploy:
+- provider: GitHub
+  tag: v$(assembly_version)
+  release: v$(assembly_version)
+  artifact: pass-winmenu
+  draft: true
+  force_update: true
+  on:
+    deploy: 1

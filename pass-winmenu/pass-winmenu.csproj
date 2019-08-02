@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props')" />
+  <Import Project="..\packages\LibGit2Sharp.NativeBinaries.2.0.267\build\net46\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.2.0.267\build\net46\LibGit2Sharp.NativeBinaries.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0292BCB9-D48A-4041-AD9E-32E9728E174E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PassWinmenu</RootNamespace>
+    <AssemblyName>pass-winmenu</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CLOSEEXISTING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>
+    </NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>embedded\pass-winmenu.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=4.9.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.9.2\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Costura, Version=3.3.3.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Costura.Fody.3.3.3\lib\net40\Costura.dll</HintPath>
+    </Reference>
+    <Reference Include="LibGit2Sharp, Version=0.26.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibGit2Sharp.0.26.0\lib\net46\LibGit2Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="McSherry.SemanticVersioning, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\McSherry.SemanticVersioning.1.2.1\lib\net46\McSherry.SemanticVersioning.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=96bf224d23c43e59, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Abstractions.4.2.17\lib\net40\System.IO.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="YamlDotNet, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.5.4.0\lib\net45\YamlDotNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="src\Actions\ActionDispatcher.cs" />
+    <Compile Include="src\Actions\CheckForUpdatesAction.cs" />
+    <Compile Include="src\Actions\CommitChangesAction.cs" />
+    <Compile Include="src\Actions\OpenExplorerAction.cs" />
+    <Compile Include="src\Actions\OpenPasswordShellAction.cs" />
+    <Compile Include="src\Actions\RetrieveChangesAction.cs" />
+    <Compile Include="src\Configuration\BrushConverter.cs" />
+    <Compile Include="src\Configuration\Classes\ApplicationConfig.cs" />
+    <Compile Include="src\Configuration\Classes\CharacterGroupConfig.cs" />
+    <Compile Include="src\Configuration\Classes\UpdateSource.cs" />
+    <Compile Include="src\Configuration\WidthConverter.cs" />
+    <Compile Include="src\Configuration\LoadResult.cs" />
+    <Compile Include="src\ExternalPrograms\Git\GitException.cs" />
+    <Compile Include="src\ExternalPrograms\Git\LibGit2SharpSyncStrategy.cs" />
+    <Compile Include="src\ExternalPrograms\Git\NativeGitSyncStrategy.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgAgentConfigReader.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgAgentConfigUpdater.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgError.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgException.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgHomedirResolver.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgInstallationFinder.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgResult.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgResultVerifier.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgStatusCode.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgTransport.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\IGpgAgent.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\IGpgAgentConfigReader.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\IGpgHomedirResolver.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\IGpgResultVerifier.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\IGpgTransport.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\StatusMessage.cs" />
+    <Compile Include="src\ExternalPrograms\Git\IGitSyncStrategy.cs" />
+    <Compile Include="src\ExternalPrograms\IProcess.cs" />
+    <Compile Include="src\ExternalPrograms\IProcesses.cs" />
+    <Compile Include="src\ExternalPrograms\ISyncService.cs" />
+    <Compile Include="src\ExternalPrograms\Processes.cs" />
+    <Compile Include="src\ExternalPrograms\ProcessWrapper.cs" />
+    <Compile Include="src\PasswordManagement\DecryptedPasswordFile.cs" />
+    <Compile Include="src\PasswordManagement\GpgRecipientFinder.cs" />
+    <Compile Include="src\PasswordManagement\KeyedPasswordFile.cs" />
+    <Compile Include="src\PasswordManagement\IPasswordManager.cs" />
+    <Compile Include="src\PasswordManagement\ParsedPasswordFile.cs" />
+    <Compile Include="src\PasswordManagement\PasswordFile.cs" />
+    <Compile Include="src\ExternalPrograms\SyncServiceFactory.cs" />
+    <Compile Include="src\PasswordManagement\IRecipientFinder.cs" />
+    <Compile Include="src\UpdateChecking\Dummy\DummyUpdateSource.cs" />
+    <Compile Include="src\UpdateChecking\UpdateCheckerFactory.cs" />
+    <Compile Include="src\UpdateChecking\UpdateSourceExtensions.cs" />
+    <Compile Include="src\WinApi\Clipboard.cs" />
+    <Compile Include="src\Configuration\Classes\GitConfig.cs" />
+    <Compile Include="src\Configuration\Classes\GpgAgentConfig.cs" />
+    <Compile Include="src\Configuration\Classes\GpgAgentConfigFile.cs" />
+    <Compile Include="src\Configuration\Classes\GpgConfig.cs" />
+    <Compile Include="src\Configuration\Classes\HotkeyAction.cs" />
+    <Compile Include="src\Configuration\Classes\HotkeyConfig.cs" />
+    <Compile Include="src\Configuration\Classes\HotkeyOptions.cs" />
+    <Compile Include="src\Configuration\Classes\InterfaceConfig.cs" />
+    <Compile Include="src\Configuration\Classes\LabelStyleConfig.cs" />
+    <Compile Include="src\Configuration\Classes\NotificationConfig.cs" />
+    <Compile Include="src\Configuration\Classes\NotificationTypesConfig.cs" />
+    <Compile Include="src\Configuration\Classes\OutputConfig.cs" />
+    <Compile Include="src\Configuration\Classes\PasswordEditorConfig.cs" />
+    <Compile Include="src\Configuration\Classes\PasswordGenerationConfig.cs" />
+    <Compile Include="src\Configuration\Classes\PasswordStoreConfig.cs" />
+    <Compile Include="src\Configuration\Classes\StyleConfig.cs" />
+    <Compile Include="src\Configuration\Classes\SyncMode.cs" />
+    <Compile Include="src\Configuration\Classes\UpdateCheckingConfig.cs" />
+    <Compile Include="src\Configuration\Classes\UsernameDetectionConfig.cs" />
+    <Compile Include="src\Configuration\Classes\UsernameDetectionMethod.cs" />
+    <Compile Include="src\Configuration\Classes\UsernameDetectionOptions.cs" />
+    <Compile Include="src\Configuration\Classes\UsernameDetectionRegexOptions.cs" />
+    <Compile Include="src\Configuration\ConfigurationException.cs" />
+    <Compile Include="src\Configuration\ConfigurationParseException.cs" />
+    <Compile Include="src\WinApi\Environment.cs" />
+    <Compile Include="src\WinApi\ExecutableNotFoundException.cs" />
+    <Compile Include="src\WinApi\ExecutablePathResolver.cs" />
+    <Compile Include="src\WinApi\IEnvironment.cs" />
+    <Compile Include="src\WinApi\KeyboardEmulator.cs" />
+    <Compile Include="src\WinApi\SendKeysEscapeGenerator.cs" />
+    <Compile Include="src\Windows\DialogCreator.cs" />
+    <Compile Include="src\Utilities\DirectoryAutocomplete.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GpgAgent.cs" />
+    <Compile Include="src\ExternalPrograms\ICryptoService.cs" />
+    <Compile Include="src\Hotkeys\Hotkey.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.KeyEventSource.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.UI.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.cs" />
+    <Compile Include="src\Hotkeys\HotkeyRegistrars.Windows.MessageWindow.cs" />
+    <Compile Include="src\Hotkeys\IHotkeyRegistrar.cs" />
+    <Compile Include="src\WinApi\INotificationService.cs" />
+    <Compile Include="src\Logger.cs" />
+    <Compile Include="src\WinApi\Notifications.cs" />
+    <Compile Include="src\PasswordManagement\PasswordFileParser.cs" />
+    <Compile Include="src\PasswordGeneration\PasswordGenerator.cs" />
+    <Compile Include="src\PasswordManagement\PasswordManager.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\PinentryWatcher.cs" />
+    <Compile Include="src\UpdateChecking\Chocolatey\ChocolateyUpdateSource.cs" />
+    <Compile Include="src\UpdateChecking\GitHub\GitHubUpdateSource.cs" />
+    <Compile Include="src\UpdateChecking\GitHub\ReleasesResponse.cs" />
+    <Compile Include="src\UpdateChecking\IUpdateSource.cs" />
+    <Compile Include="src\UpdateChecking\ProgramVersion.cs" />
+    <Compile Include="src\UpdateChecking\UpdateChecker.cs" />
+    <Compile Include="src\UpdateChecking\UpdateException.cs" />
+    <Compile Include="src\Utilities\Disposable.cs" />
+    <Compile Include="src\Utilities\ExecutionTimer.cs" />
+    <Compile Include="src\Utilities\ExtensionMethods\DirectoryInfoExtensions.cs" />
+    <Compile Include="src\Utilities\ExtensionMethods\KeyEventArgsExtensions.cs" />
+    <Compile Include="src\Utilities\ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="src\Hotkeys\HotkeyException.cs" />
+    <Compile Include="src\Hotkeys\HotkeyManager.cs" />
+    <Compile Include="src\Hotkeys\KeyCombination.cs" />
+    <Compile Include="src\Configuration\Classes\Config.cs" />
+    <Compile Include="src\Configuration\ConfigManager.cs" />
+    <Compile Include="src\Utilities\ExtensionMethods\ScreenExtensions.cs" />
+    <Compile Include="src\ExternalPrograms\Git\Git.cs" />
+    <Compile Include="src\ExternalPrograms\Gpg\GPG.cs" />
+    <Compile Include="src\Program.cs" />
+    <Compile Include="src\EmbeddedResources.cs" />
+    <Compile Include="src\WinApi\StartupLink.cs" />
+    <Compile Include="src\Utilities\Helpers.cs" />
+    <Compile Include="src\Utilities\NativeMethods.cs" />
+    <Compile Include="src\Windows\EditWindow.xaml.cs">
+      <DependentUpon>EditWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\Windows\FileSelectionWindow.cs" />
+    <Compile Include="src\WinApi\IExecutablePathResolver.cs" />
+    <Compile Include="src\Windows\LogViewer.xaml.cs">
+      <DependentUpon>LogViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\Windows\SelectionLabel.xaml.cs">
+      <DependentUpon>SelectionLabel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Windows\SelectionWindowConfiguration.cs" />
+    <Compile Include="src\Windows\PasswordSelectionWindow.cs" />
+    <Compile Include="src\Windows\PasswordWindow.xaml.cs">
+      <DependentUpon>PasswordWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Windows\SelectionWindow.xaml.cs">
+      <DependentUpon>SelectionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Windows\WindowManager.cs" />
+    <Page Include="src\Windows\EditWindow.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="src\Windows\LogViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\Windows\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="src\Windows\PasswordWindow.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="src\Windows\SelectionLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\Windows\SelectionWindow.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="embedded\pass-winmenu.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\app.config" />
+    <None Include="build-package.ps1" />
+    <None Include="include\GnuPG.zip" />
+    <None Include="include\packaged-config-nogpg.patch" />
+    <None Include="include\packaged-config.patch" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="embedded\default-config.yaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FodyWeavers.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="embedded\version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="embedded\pass-winmenu-new.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\LibGit2Sharp.NativeBinaries.2.0.267\build\net46\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.NativeBinaries.2.0.267\build\net46\LibGit2Sharp.NativeBinaries.props'))" />
+    <Error Condition="!Exists('..\packages\Fody.4.2.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.4.2.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props'))" />
+  </Target>
+  <PropertyGroup>
+    <PreBuildEvent>git describe --tags &gt; "$(ProjectDir)\embedded\version.txt"</PreBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
