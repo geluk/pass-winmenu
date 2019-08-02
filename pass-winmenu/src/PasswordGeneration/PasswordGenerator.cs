@@ -17,7 +17,7 @@ namespace PassWinmenu.PasswordGeneration
 			Options = options;
 		}
 
-		public string GeneratePassword()
+		public string GeneratePassword(int length)
 		{
 			if (!Options.CharacterGroups.Any(g => g.Enabled)) return null;
 
@@ -32,7 +32,7 @@ namespace PassWinmenu.PasswordGeneration
 			var charList = completeCharSet.ToList();
 
 			// Generate as many random list indices as we need to build a password.
-			var indices = GetIntegers(charList.Count, Options.Length);
+			var indices = GetIntegers(charList.Count, length);
 
 			// Transform the list of indices into a list of characters.
 			var characters = indices.Select(i => charList[i]).ToArray();

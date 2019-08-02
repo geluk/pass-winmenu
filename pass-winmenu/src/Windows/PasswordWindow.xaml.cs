@@ -65,13 +65,13 @@ namespace PassWinmenu.Windows
 
 		private void RegeneratePassword()
 		{
-			Password.Text = passwordGenerator.GeneratePassword();
+			Password.Text = passwordGenerator.GeneratePassword(Int16.Parse(Length.Text));
 			Password.CaretIndex = Password.Text.Length;
 		}
 
 		private void Btn_Generate_Click(object sender, RoutedEventArgs e)
 		{
-			Password.Text = passwordGenerator.GeneratePassword();
+			Password.Text = passwordGenerator.GeneratePassword(Int16.Parse(Length.Text));
 		}
 
 		private void Btn_OK_Click(object sender, RoutedEventArgs e)
@@ -106,6 +106,27 @@ namespace PassWinmenu.Windows
 		public void Dispose()
 		{
 			passwordGenerator.Dispose();
+		}
+
+		private void HandleLengthTextInput(object sender, TextCompositionEventArgs e)
+		{
+			e.Handled = !e.Text.All(char.IsDigit);
+		}
+
+		private void HandleLengthPasting(object sender, DataObjectPastingEventArgs e)
+		{
+			if(e.DataObject.GetDataPresent(typeof(String)))
+			{
+				String text = (String)e.DataObject.GetData(typeof(String));
+				if(!text.All(char.IsDigit))
+				{
+					e.CancelCommand();
+				}
+			}
+			else
+			{
+				e.CancelCommand();
+			}
 		}
 	}
 }

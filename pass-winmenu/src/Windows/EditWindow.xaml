@@ -10,8 +10,11 @@
 			<GroupBox Header="Password generator" DockPanel.Dock="Top" VerticalAlignment="Top" Margin="5,15,5,0">
 				<StackPanel>
 					<Grid>
-						<TextBox x:Name="Password" Height="23" Margin="5,5,90,0" Padding="3,3,3,3" TextWrapping="Wrap" Text=""
+						<TextBox x:Name="Password" Height="23" Margin="5,5,130,0" Padding="3,3,3,3" TextWrapping="Wrap" Text=""
 						         VerticalAlignment="Top" FontFamily="Consolas" />
+						<TextBox x:Name="Length" Height="23" Margin="185,5,87,0" Padding="3,3,3,3" TextWrapping="NoWrap" Text="20"
+								 VerticalAlignment="Top" FontFamily="Consolas" ToolTip="Length" MaxLength="4"
+								 PreviewTextInput="HandleLengthTextInput" DataObject.Pasting="HandleLengthPasting" />
 						<Button x:Name="Btn_Generate" Content="Generate" Margin="0,5,5,0" Click="Btn_Generate_Click"
 						        HorizontalAlignment="Right" Width="80" Height="23" VerticalAlignment="Top" />
 					</Grid>

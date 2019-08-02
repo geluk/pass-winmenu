@@ -19,7 +19,7 @@ namespace PassWinmenuTests.PasswordGeneration
 			};
 			using (var generator = new PasswordGenerator(options))
 			{
-				var password = generator.GeneratePassword();
+				var password = generator.GeneratePassword(options.Length);
 
 				password.Length.ShouldBe(32);
 			}
@@ -36,7 +36,7 @@ namespace PassWinmenuTests.PasswordGeneration
 			};
 			using (var generator = new PasswordGenerator(options))
 			{
-				var password = generator.GeneratePassword();
+				var password = generator.GeneratePassword(options.Length);
 
 				password.ShouldBeNull();
 			}
@@ -50,6 +50,7 @@ namespace PassWinmenuTests.PasswordGeneration
 		{
 			var options = new PasswordGenerationConfig
 			{
+				Length = 32,
 				CharacterGroups = new []
 				{
 					new CharacterGroupConfig("test", allowedCharacters, true), 
@@ -57,7 +58,7 @@ namespace PassWinmenuTests.PasswordGeneration
 			};
 			using (var generator = new PasswordGenerator(options))
 			{
-				var password = generator.GeneratePassword();
+				var password = generator.GeneratePassword(options.Length);
 
 				password.ShouldBeSubsetOf(allowedCharacters);
 			}
