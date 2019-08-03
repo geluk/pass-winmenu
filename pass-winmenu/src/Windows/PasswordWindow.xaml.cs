@@ -8,7 +8,7 @@ using PassWinmenu.PasswordGeneration;
 
 namespace PassWinmenu.Windows
 {
-	internal sealed partial class PasswordWindow : IDisposable
+	internal partial class PasswordWindow : IDisposable
 	{
 		private readonly PasswordGenerator passwordGenerator;
 

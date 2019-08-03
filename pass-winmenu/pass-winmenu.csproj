@@ -231,10 +231,7 @@
     <Compile Include="src\WinApi\StartupLink.cs" />
     <Compile Include="src\Utilities\Helpers.cs" />
     <Compile Include="src\Utilities\NativeMethods.cs" />
-    <Compile Include="src\Windows\EditWindow.xaml.cs">
-      <DependentUpon>EditWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="src\Windows\EditWindow.xaml.cs" />
     <Compile Include="src\Windows\FileSelectionWindow.cs" />
     <Compile Include="src\WinApi\IExecutablePathResolver.cs" />
     <Compile Include="src\Windows\LogViewer.xaml.cs">
@@ -256,10 +253,6 @@
       <DependentUpon>SelectionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\Windows\WindowManager.cs" />
-    <Page Include="src\Windows\EditWindow.xaml">
-      <Generator>XamlIntelliSenseFileGenerator</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="src\Windows\LogViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

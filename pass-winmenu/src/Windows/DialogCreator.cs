@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
 using System.Windows;
 using PassWinmenu.Configuration;
@@ -129,7 +128,7 @@ namespace PassWinmenu.Windows
 
 				try
 				{
-					var newFile = new DecryptedPasswordFile(file, window.PasswordContent.Text);
+					var newFile = new DecryptedPasswordFile(file, window.Password.Text + '\n' + window.ExtraContent.Text);
 					passwordManager.EncryptPassword(newFile);
 
 					syncService?.EditPassword(newFile.FullPath);
