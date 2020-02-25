@@ -114,8 +114,8 @@ powershell> git add -A
 powershell> git commit -m "Initialise password repository"
 ```
 
-You'll also need a remote Git server. GitLab offers free private repositories, and GitHub does too if
-you're a student. Alternatively, you can of course run your own Git server.
+You'll also need a remote Git server. GitLab offers free private repositories, and [GitHub does too](https://help.github.com/en/github/administering-a-repository/setting-repository-visibility#making-a-repository-private)
+for private accounts and up to three collaborators. Alternatively, you can of course run your own Git server.
 
 Add an empty repository on your Git provider of choice, then connect your password store to it. It will usually come down to something like this:
 
