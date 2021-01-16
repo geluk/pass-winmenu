@@ -1,8 +1,8 @@
-﻿<Application x:Class="PassWinmenu.App"
+<Application x:Class="PassWinmenu.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PassWinmenu"
-             StartupUri="src/Windows/MainWindow.xaml">
+             Startup="App_Startup">
     <Application.Resources>
          
     </Application.Resources>

@@ -26,8 +26,7 @@ namespace PassWinmenu.Configuration
 		public object ReadYaml(IParser parser, Type type)
 		{
 			// A scalar value will be considered to represent a uniform width.
-			var scalar = parser.Peek<Scalar>();
-			if (scalar != null)
+			if (parser.Accept<Scalar>(out _))
 			{
 				// Only floating-point values are accepted here.
 				((INodeDeserializer)scalarNodeDeserializer).Deserialize(parser, typeof(double), null, out var parsedValue);

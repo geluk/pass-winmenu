@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace PassWinmenu.Utilities.ExtensionMethods
@@ -16,7 +16,7 @@ namespace PassWinmenu.Utilities.ExtensionMethods
 				throw new ArgumentNullException(nameof(value));
 			}
 
-			if (value.EndsWith("%"))
+			if (value.EndsWith("%", StringComparison.Ordinal))
 			{
 				var percentage = double.Parse(value.Substring(0, value.Length - 1))/100.0;
 				return direction == Direction.Horizontal ? percentage * screen.Bounds.Width : percentage * screen.Bounds.Height;

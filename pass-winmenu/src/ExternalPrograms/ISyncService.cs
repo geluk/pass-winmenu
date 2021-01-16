@@ -1,4 +1,4 @@
-﻿using LibGit2Sharp;
+using LibGit2Sharp;
 
 namespace PassWinmenu.ExternalPrograms
 {
@@ -10,6 +10,6 @@ namespace PassWinmenu.ExternalPrograms
 		void Fetch();
 		void Push();
 		void Rebase();
-		BranchTrackingDetails GetTrackingDetails();
+		TrackingDetails GetTrackingDetails();
 	}
 }

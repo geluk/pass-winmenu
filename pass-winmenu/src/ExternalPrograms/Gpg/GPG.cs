@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using PassWinmenu.Configuration;
 
 namespace PassWinmenu.ExternalPrograms.Gpg
 {
 	/// <summary>
 	/// Simple wrapper over GPG.
 	/// </summary>
-	internal class GPG : ICryptoService
+	internal class GPG : ICryptoService, ISignService
 	{
 		private readonly IGpgTransport gpgTransport;
 		private readonly IGpgAgent gpgAgent;
@@ -16,12 +15,12 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 		private readonly PinentryWatcher pinentryWatcher = new PinentryWatcher();
 		private readonly bool enablePinentryFix;
 
-		public GPG(IGpgTransport gpgTransport, IGpgAgent gpgAgent, IGpgResultVerifier gpgResultVerifier, bool enablePinentryFix)
+		public GPG(IGpgTransport gpgTransport, IGpgAgent gpgAgent, IGpgResultVerifier gpgResultVerifier, GpgConfig gpgConfig)
 		{
 			this.gpgTransport = gpgTransport;
 			this.gpgAgent = gpgAgent;
 			this.gpgResultVerifier = gpgResultVerifier;
-			this.enablePinentryFix = enablePinentryFix;
+			this.enablePinentryFix = gpgConfig.PinentryFix;
 		}
 
 		/// <summary>
@@ -48,7 +47,7 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 		/// <exception cref="GpgException">Thrown when encryption fails.</exception>
 		public void Encrypt(string data, string outputFile, params string[] recipients)
 		{
-			if (recipients == null) recipients = new string[0];
+			if (recipients == null) recipients = Array.Empty<string>();
 			var recipientList = string.Join(" ", recipients.Select(r => $"--recipient \"{r}\""));
 
 			var result = gpgTransport.CallGpg($"--output \"{outputFile}\" {recipientList} --encrypt", data);
@@ -79,6 +78,14 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 		{
 			var output = gpgTransport.CallGpg("--version");
 			return output.Stdout.Split(new []{"\r\n"}, StringSplitOptions.RemoveEmptyEntries).First();
+		}
+
+		public string Sign(string message, string keyId)
+		{
+			if(enablePinentryFix) pinentryWatcher.BumpPinentryWindow();
+			gpgAgent.EnsureAgentResponsive();
+			var result = gpgTransport.CallGpg($"--detach-sign --armor", message);
+			return result.Stdout;
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 
 namespace PassWinmenu.WinApi
@@ -17,7 +18,7 @@ namespace PassWinmenu.WinApi
 
 			// SendKeys.Send expects special characters to be escaped by wrapping them with curly braces.
 			var specialCharacters = new[] { '{', '}', '[', ']', '(', ')', '+', '^', '%', '~' };
-			var escaped = string.Concat(text.Select(c => specialCharacters.Contains(c) ? $"{{{c}}}" : c.ToString()));
+			var escaped = string.Concat(text.Select(c => specialCharacters.Contains(c) ? $"{{{c}}}" : c.ToString(CultureInfo.CurrentCulture)));
 			return escaped;
 		}
 	}

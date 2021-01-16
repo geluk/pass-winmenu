@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.IO.Abstractions.TestingHelpers;
 using PassWinmenu.ExternalPrograms.Gpg;
 
 namespace PassWinmenuTests.Utilities

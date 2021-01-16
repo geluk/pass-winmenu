@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace PassWinmenu.UpdateChecking
 {
-	[Serializable]
-	internal class UpdateException : Exception
+	public class UpdateException : Exception
 	{
 		public UpdateException(string message) : base(message) { }
 

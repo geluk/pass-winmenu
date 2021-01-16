@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PassWinmenu.ExternalPrograms.Gpg
 {
@@ -59,7 +56,7 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 		/// <summary>
 		/// Iterates over a list of config lines, adding or replacing the given config keys.
 		/// </summary>
-		private IEnumerable<string> UpdateAgentConfigKeyCollection(string[] existingLines, List<KeyValuePair<string, string>> pairsToUpdate)
+		private static IEnumerable<string> UpdateAgentConfigKeyCollection(string[] existingLines, List<KeyValuePair<string, string>> pairsToUpdate)
 		{
 			var configKeyRegex = new Regex(@"^(\s*([^#^\s][^\s]*)\s+)(.*)$");
 			for (var i = 0; i < existingLines.Length; i++)

@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using McSherry.SemanticVersioning;
 using PassWinmenu.Actions;
 using PassWinmenu.Configuration;
+using PassWinmenu.ExternalPrograms;
 using PassWinmenu.UpdateChecking;
 using PassWinmenu.Utilities;
 using Application = System.Windows.Application;
@@ -15,7 +15,7 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace PassWinmenu.WinApi
 {
-	internal class Notifications : INotificationService
+	internal class Notifications : INotificationService, ISyncStateTracker
 	{
 		public NotifyIcon Icon { get; set; }
 
@@ -24,9 +24,10 @@ namespace PassWinmenu.WinApi
 		private ToolStripSeparator downloadSeparator;
 		private const int ToolTipTimeoutMs = 5000;
 
-		public Notifications(NotifyIcon icon)
+		private Notifications(NotifyIcon icon)
 		{
 			Icon = icon ?? throw new ArgumentNullException(nameof(icon));
+			Icon.Click += HandleIconClick;
 		}
 
 		public static Notifications Create()
@@ -38,6 +39,21 @@ namespace PassWinmenu.WinApi
 			};
 
 			return new Notifications(icon);
+		}
+
+		private void HandleIconClick(object sender, EventArgs e)
+		{
+			var args = (MouseEventArgs)e;
+			if (args.Button == MouseButtons.Left)
+			{
+				// Unfortunately, calling Show() here does not do what you'd expect.
+				// It displays the menu in the wrong place, and the menu won't hide if you click outside it.
+				// ShowContextMenu() does the right thing, but it's a private method,
+				// so we have to resort to a bit of a hack to get it to work.
+				var mi = typeof(NotifyIcon)
+					.GetMethod("ShowContextMenu", BindingFlags.Instance | BindingFlags.NonPublic);
+				mi!.Invoke(Icon, null);
+			}
 		}
 
 		public void AddMenuActions(ActionDispatcher actionDispatcher)
@@ -63,17 +79,17 @@ namespace PassWinmenu.WinApi
 			menu.Items.Add("Add new Password", null, (sender, args) => actionDispatcher.AddPassword());
 			menu.Items.Add("Edit Password File", null, (sender, args) => actionDispatcher.EditPassword());
 			menu.Items.Add(new ToolStripSeparator());
-			menu.Items.Add("Push to Remote", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.GitPush));
-			menu.Items.Add("Pull from Remote", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.GitPull));
+			menu.Items.Add("Push to Remote", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.GitPush)());
+			menu.Items.Add("Pull from Remote", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.GitPull)());
 			menu.Items.Add(new ToolStripSeparator());
-			menu.Items.Add("Open Explorer", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.OpenExplorer));
-			menu.Items.Add("Open Shell", null, (sender, args) => Task.Run(() => actionDispatcher.Dispatch(HotkeyAction.OpenShell)));
+			menu.Items.Add("Open Explorer", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.OpenExplorer)());
+			menu.Items.Add("Open Shell", null, (sender, args) => Task.Run(() => actionDispatcher.Dispatch(HotkeyAction.OpenShell)()));
 			menu.Items.Add(new ToolStripSeparator());
 
 			var dropDown = new ToolStripMenuItem("More Actions");
-			dropDown.DropDownItems.Add("Check for Updates", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.CheckForUpdates));
-			dropDown.DropDownItems.Add("Edit Configuration", null, (sender, args) => actionDispatcher.EditConfiguration());
-			dropDown.DropDownItems.Add("View Log", null, (sender, args) => actionDispatcher.ViewLogs());
+			dropDown.DropDownItems.Add("Check for Updates", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.CheckForUpdates)());
+			dropDown.DropDownItems.Add("Edit Configuration", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.EditConfiguration)());
+			dropDown.DropDownItems.Add("View Log", null, (sender, args) => actionDispatcher.Dispatch(HotkeyAction.ViewLog)());
 
 			menu.Items.Add(dropDown);
 			menu.Items.Add(new ToolStripSeparator());
@@ -93,7 +109,7 @@ namespace PassWinmenu.WinApi
 
 			menu.Items.Add(startWithWindows);
 			menu.Items.Add("About", null, (sender, args) => Process.Start("https://github.com/Baggykiin/pass-winmenu#readme"));
-			menu.Items.Add("Quit", null, (sender, args) => Program.Exit());
+			menu.Items.Add("Quit", null, (sender, args) => App.Exit());
 			Icon.ContextMenuStrip = menu;
 		}
 
@@ -183,6 +199,26 @@ namespace PassWinmenu.WinApi
 		{
 			Icon?.Dispose();
 			downloadUpdate?.Dispose();
+			downloadSeparator?.Dispose();
+		}
+
+		public void SetSyncState(SyncState state)
+		{
+			switch (state)
+			{
+				case SyncState.UpToDate:
+					Icon.Icon = EmbeddedResources.Icon;
+					break;
+				case SyncState.Ahead:
+					Icon.Icon = EmbeddedResources.IconAhead;
+					break;
+				case SyncState.Behind:
+					Icon.Icon = EmbeddedResources.IconBehind;
+					break;
+				case SyncState.Diverged:
+					Icon.Icon = EmbeddedResources.IconDiverged;
+					break;
+			}
 		}
 	}
 

@@ -43,14 +43,14 @@ namespace PassWinmenuTests.ExternalPrograms.Gpg
 		}
 
 		[Fact, TestCategory(Category)]
-		public void FindGpgInstallation_FileNotFound_ThrowsArgumentException()
+		public void FindGpgInstallation_FileNotFound_ThrowsGpgError()
 		{
 			var resolverMock = new Mock<IExecutablePathResolver>();
-			resolverMock.Setup(r => r.Resolve(It.IsAny<string>())).Throws<ExecutableNotFoundException>();
+			resolverMock.Setup(r => r.Resolve(It.IsAny<string>())).Throws(new ExecutableNotFoundException("Executable not found"));
 			var fs = new MockFileSystem();
 			var finder = new GpgInstallationFinder(fs, resolverMock.Object);
 
-			Should.Throw<ExecutableNotFoundException>(() => finder.FindGpgInstallation("C:\\Gpg\\gpg.exe"));
+			Should.Throw<GpgError>(() => finder.FindGpgInstallation("C:\\Gpg\\gpg.exe"));
 		}
 
 		[Fact, TestCategory(Category)]

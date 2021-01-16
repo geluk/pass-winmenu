@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using LibGit2Sharp;
 using PassWinmenu.Configuration;
 using PassWinmenu.Windows;
 
@@ -11,7 +9,7 @@ namespace PassWinmenu.Actions
 	{
 		private readonly DialogCreator dialogCreator;
 
-		private Dictionary<HotkeyAction, IAction> actions;
+		private readonly Dictionary<HotkeyAction, IAction> actions;
 
 		public ActionDispatcher(DialogCreator dialogCreator, Dictionary<HotkeyAction, IAction> actions)
 		{
@@ -55,19 +53,9 @@ namespace PassWinmenu.Actions
 			throw new NotImplementedException("Not implemented.");
 		}
 
-		public void ViewLogs()
-		{
-			dialogCreator.ViewLogs();
-		}
-
-		public void EditConfiguration()
-		{
-			Process.Start(Program.ConfigFileName);
-		}
-
 		public Action Dispatch(HotkeyAction hotkeyAction)
 		{
-			if (actions.TryGetValue(hotkeyAction, out IAction action))
+			if (actions.TryGetValue(hotkeyAction, out var action))
 			{
 				return action.Execute;
 			}

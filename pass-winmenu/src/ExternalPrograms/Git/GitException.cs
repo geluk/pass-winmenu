@@ -2,9 +2,12 @@ using System;
 
 namespace PassWinmenu.ExternalPrograms
 {
-	[Serializable]
-	internal class GitException : Exception
+	public class GitException : Exception
 	{
+		public GitException()
+		{
+		}
+
 		public string GitError { get; }
 
 		public GitException(string message) : base(message)
@@ -19,5 +22,6 @@ namespace PassWinmenu.ExternalPrograms
 		{
 			GitError = gitError;
 		}
+
 	}
 }

@@ -41,7 +41,17 @@ namespace PassWinmenu.Actions
 			{
 				homeDir = $" --homedir \"{fileSystem.Path.GetFullPath(homedirResolver.GetConfiguredHomeDir())}\"";
 			}
-			powerShell.Arguments = $"-NoExit -Command \"function gpg() {{ & '{gpgExe}'{homeDir} $args }}\"";
+			powerShell.Arguments =
+				$"-NoExit -Command \"function gpg() {{ & '{gpgExe}'{homeDir} $args }};" +
+				$"echo '\n" +
+				$"    ╔══════════════════════════════════════════════════════════╗\n" +
+				$"    ║ In this  shell, you can execute  arbitrary GPG commands. ║\n" +
+				$"    ║ The ''gpg'' command  has been aliased  to the same version ║\n" +
+				$"    ║ of GPG  used by pass-winmenu, and configured to make use ║\n" +
+				$"    ║ of the  same  home  directory, so  you can  access  your ║\n" +
+				$"    ║ password store GPG keys from here.                       ║\n" +
+				$"    ╚══════════════════════════════════════════════════════════╝\n" +
+				$"'\"";
 			processes.Start(powerShell);
 		}
 	}

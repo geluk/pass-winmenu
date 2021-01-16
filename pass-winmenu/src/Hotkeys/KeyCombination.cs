@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 
@@ -24,7 +25,7 @@ namespace PassWinmenu.Hotkeys
 			// Split a whitespace-delimited list of keys and normalise key names.
 			var combination = str.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(key => key.Trim())
-				.Select(key => key.ToLower())
+				.Select(key => key.ToLower(CultureInfo.CurrentCulture))
 				.Select(key => key == "ctrl" ? "control" : key)
 				.Select(key => (key == "win" || key == "super") ? "windows" : key);
 

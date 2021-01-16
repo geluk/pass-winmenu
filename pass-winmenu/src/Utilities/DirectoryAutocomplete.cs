@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace PassWinmenu.Utilities
 		{
 			// Ensure consistency of directory separators.
 			// We can't use Path.Combine() here because it doesn't concatenate drive letters properly.
-			this.baseDirectory = string.Join(Path.DirectorySeparatorChar.ToString(), baseDirectory.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries));
+			this.baseDirectory = string.Join(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), baseDirectory.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries));
 			// Append a directory separator so Path.GetDirectoryName(baseDirectory) will correctly return the full base directory, instead of its parent directory.
 			this.baseDirectory = this.baseDirectory + Path.DirectorySeparatorChar;
 		}
@@ -29,18 +30,18 @@ namespace PassWinmenu.Utilities
 			// If the directory to look in doesn't exist, we can't suggest anything for it.
 			if (!Directory.Exists(directory))
 			{
-				return new string[0];
+				return Array.Empty<string>();
 			}
 			
 			// Dotfiles should be filtered out.
 			var suggestions = Directory.GetFileSystemEntries(directory, file + "*")
-				.Where(suggestion => !Path.GetFileName(suggestion).StartsWith("."));
+				.Where(suggestion => !Path.GetFileName(suggestion).StartsWith(".", StringComparison.Ordinal));
 
 			// If we have no suggestions, try showing suggestions for just the parent directory.
 			if (!suggestions.Any())
 			{
 				suggestions = Directory.GetFileSystemEntries(directory, "*")
-					.Where(suggestion => !Path.GetFileName(suggestion).StartsWith("."));
+					.Where(suggestion => !Path.GetFileName(suggestion).StartsWith(".", StringComparison.Ordinal));
 			}
 			// If we have only one suggestion and that suggestion is a directory, 
 			// add suggestions for the files inside that directory.
@@ -48,7 +49,7 @@ namespace PassWinmenu.Utilities
 			{
 				// Again, ignoring dotfiles.
 				suggestions = suggestions.Concat(Directory.GetFileSystemEntries(suggestions.First())
-					.Where(suggestion => !Path.GetFileName(suggestion).StartsWith(".")));
+					.Where(suggestion => !Path.GetFileName(suggestion).StartsWith(".", StringComparison.Ordinal)));
 			}
 			// Append a directory separator char to all directories to make it clear we're suggesting a directory, not a file.
 			suggestions = suggestions.Select(suggestion => Directory.Exists(suggestion) ? suggestion + Path.DirectorySeparatorChar : suggestion);
@@ -57,9 +58,9 @@ namespace PassWinmenu.Utilities
 			return suggestions.Select(suggestion => MakeRelativePath(baseDirectory, suggestion)).ToArray();
 		}
 
-		private string MakeRelativePath(string baseDir, string absoluteDir)
+		private static string MakeRelativePath(string baseDir, string absoluteDir)
 		{
-			if (!baseDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (!baseDir.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal))
 			{
 				baseDir = baseDir + Path.DirectorySeparatorChar;
 			}

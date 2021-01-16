@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace PassWinmenu.Utilities.ExtensionMethods
@@ -13,7 +14,7 @@ namespace PassWinmenu.Utilities.ExtensionMethods
 			var pattern = "([_\\-])(?<char>[a-z])";
 			var num = 1;
 			var str1 = Regex.Replace(input, pattern, (MatchEvaluator)(match => match.Groups["char"].Value.ToUpperInvariant()), (RegexOptions)num);
-			return firstLetterTransform(str1[0]).ToString() + str1.Substring(1);
+			return firstLetterTransform(str1[0]).ToString(CultureInfo.InvariantCulture) + str1.Substring(1);
 		}
 
 		/// <summary>

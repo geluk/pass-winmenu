@@ -1,8 +1,9 @@
-﻿namespace PassWinmenu.Configuration
+namespace PassWinmenu.Configuration
 {
 	internal enum SyncMode
 	{
 		Builtin,
-		NativeGit
+		NativeGit,
+		Auto,
 	}
 }

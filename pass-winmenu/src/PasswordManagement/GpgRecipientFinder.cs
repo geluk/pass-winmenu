@@ -1,3 +1,4 @@
+using System;
 using System.IO.Abstractions;
 using PassWinmenu.Utilities.ExtensionMethods;
 
@@ -26,7 +27,7 @@ namespace PassWinmenu.PasswordManagement
 			{
 				if (current.Parent == null || current.PathEquals(passwordStore))
 				{
-					return new string[0];
+					return Array.Empty<string>();
 				}
 				current = current.Parent;
 			}

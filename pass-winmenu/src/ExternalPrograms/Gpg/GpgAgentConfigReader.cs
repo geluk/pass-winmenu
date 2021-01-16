@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Abstractions;
 
@@ -28,7 +29,7 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 
 			using (fileSystem.File.Create(agentConf))
 			{
-				return new string[0];
+				return Array.Empty<string>();
 			}
 		}
 

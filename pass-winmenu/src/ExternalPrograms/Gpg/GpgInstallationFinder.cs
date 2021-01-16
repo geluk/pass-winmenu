@@ -54,7 +54,15 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 
 		private GpgInstallation ResolveFromPath(string gpgPathSpec)
 		{
-			var resolved = executablePathResolver.Resolve(gpgPathSpec);
+			string resolved;
+			try
+			{
+				resolved = executablePathResolver.Resolve(gpgPathSpec);
+			}
+			catch (ExecutableNotFoundException)
+			{
+				throw new GpgError($"Gpg executable not found. Please verify that '${gpgPathSpec}' points to a valid GPG executable.");
+			}
 			var executable = fileSystem.FileInfo.FromFileName(resolved);
 
 			Log.Send("GPG executable found at the configured path. Assuming installation dir to be " + executable.Directory);

@@ -7,7 +7,7 @@ using LibGit2Sharp;
 
 namespace PassWinmenu.ExternalPrograms
 {
-	public class NativeGitSyncStrategy : IGitSyncStrategy
+	internal class NativeGitSyncStrategy : IGitSyncStrategy
 	{
 		private readonly string gitPath;
 		private readonly string repositoryPath;
@@ -49,7 +49,7 @@ namespace PassWinmenu.ExternalPrograms
 				RedirectStandardOutput = true,
 				CreateNoWindow = true
 			};
-			if (!String.IsNullOrEmpty(Configuration.ConfigManager.Config.Git.SshPath))
+			if (!string.IsNullOrEmpty(Configuration.ConfigManager.Config.Git.SshPath))
 			{
 				psi.EnvironmentVariables.Add("GIT_SSH", Configuration.ConfigManager.Config.Git.SshPath);
 			}

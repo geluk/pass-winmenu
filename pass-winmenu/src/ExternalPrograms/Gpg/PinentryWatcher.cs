@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Threading;
 using PassWinmenu.Utilities;
@@ -49,7 +50,15 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 			
 			if (pinentry.MainWindowHandle != foregroundHandle)
 			{
+				var process = NativeMethods.GetWindowProcess(foregroundHandle);
+				Log.Send("Pinentry failed to bring itself to the foreground.");
+				Log.Send("Current foreground process details:");
+				Log.Send($"  Name:      {process.ProcessName}");
+				Log.Send($"  Id:        {process.Id}");
+				Log.Send($"  Path:      {process.MainModule?.FileName ?? "(unknown)"}");
+				Log.Send($"  StartTime: {process.StartTime:O}");
 				// Looks like pinentry has failed to bring itself to the foreground, let's help it out.
+				// TODO: Take foreground access and grant it to pinentry.
 				var windowSet = NativeMethods.SetForegroundWindow(pinentry.MainWindowHandle);
 				if (windowSet)
 				{
@@ -58,6 +67,8 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 				else
 				{
 					Log.Send("Failed to send pinentry window to foreground");
+					var lastError = Marshal.GetLastWin32Error();
+					Log.Send($"Last error: 0x{lastError:x8}");
 				}
 			}
 			else

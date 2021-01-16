@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 
@@ -17,7 +12,7 @@ namespace PassWinmenu.Hotkeys
 		/// <summary>
 		/// A registrar for registering hotkeys for UI elements.
 		/// </summary>
-		public sealed class UI
+		private sealed class UI
 		{
 			// Simple utility class for adapting a [UIElement] into the
 			// [IKeyEventSource] required by the generic registrar.

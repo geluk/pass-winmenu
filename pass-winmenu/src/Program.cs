@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
-using LibGit2Sharp;
+using Autofac.Core;
 using PassWinmenu.Actions;
 using PassWinmenu.Configuration;
 using PassWinmenu.ExternalPrograms;
@@ -17,6 +17,7 @@ using PassWinmenu.ExternalPrograms.Gpg;
 using PassWinmenu.Hotkeys;
 using PassWinmenu.PasswordManagement;
 using PassWinmenu.UpdateChecking;
+using PassWinmenu.Utilities;
 using PassWinmenu.WinApi;
 using PassWinmenu.Windows;
 
@@ -32,16 +33,15 @@ namespace PassWinmenu
 		public const string LastConfigVersion = "1.7";
 		public const string EncryptedFileExtension = ".gpg";
 		public const string PlaintextFileExtension = ".txt";
-		public const string ConfigFileName = @".\pass-winmenu.yaml";
+		public const string ConfigFileName = "pass-winmenu.yaml";
 
-		private ActionDispatcher actionDispatcher;
-		private HotkeyManager hotkeys;
 		private UpdateChecker updateChecker;
+		private Option<RemoteUpdateChecker> remoteUpdateChecker;
 		private Notifications notificationService;
 
 		private IContainer container;
 
-		public Program()
+		public void Start()
 		{
 			try
 			{
@@ -54,6 +54,10 @@ namespace PassWinmenu
 				Log.Send("Could not start pass-winmenu: An exception occurred.", LogLevel.Error);
 				Log.ReportException(e);
 
+				if (e is DependencyResolutionException de && de.InnerException != null)
+				{
+					e = de.InnerException;
+				}
 				string errorMessage = $"pass-winmenu failed to start ({e.GetType().Name}: {e.Message})";
 				if (notificationService == null)
 				{
@@ -64,8 +68,9 @@ namespace PassWinmenu
 				else
 				{
 					notificationService.ShowErrorWindow(errorMessage);
+					notificationService.Dispose();
 				}
-				Exit();
+				App.Exit();
 			}
 		}
 
@@ -81,29 +86,29 @@ namespace PassWinmenu
 			Log.Send($"Starting pass-winmenu {Version}");
 			Log.Send("------------------------------");
 
-			// Set the security protocol to TLS 1.2 only.
-			// We only use this for update checking (Git push over HTTPS is not handled by .NET).
-			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+			Log.Send($"Enabled security protocols: {ServicePointManager.SecurityProtocol}");
 
 			// Create the notification service first, so it's available if initialisation fails.
 			notificationService = Notifications.Create();
-			
+
 			// Initialise the DI Container builder.
 			var builder = new ContainerBuilder();
 
 			builder.Register(_ => notificationService)
 				.AsImplementedInterfaces()
 				.SingleInstance();
-			
+
 			// Now load the configuration options that we'll need 
 			// to continue initialising the rest of the applications.
-			LoadConfigFile();
+			var runtimeConfig = RuntimeConfiguration.Parse(Environment.GetCommandLineArgs());
+			LoadConfigFile(runtimeConfig);
 
 			builder.Register(_ => ConfigManager.Config).AsSelf();
 			builder.Register(_ => ConfigManager.Config.Gpg).AsSelf();
 			builder.Register(_ => ConfigManager.Config.Git).AsSelf();
 			builder.Register(_ => ConfigManager.Config.PasswordStore).AsSelf();
 			builder.Register(_ => ConfigManager.Config.Application.UpdateChecking).AsSelf();
+			builder.Register(_ => ConfigManager.Config.PasswordStore.UsernameDetection).AsSelf();
 
 #if DEBUG
 			Log.EnableFileLogging();
@@ -114,11 +119,13 @@ namespace PassWinmenu
 			}
 #endif
 
-			// Register actions
+			// Register actions and hotkeys
 			builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(ActionDispatcher)))
 				.InNamespaceOf<ActionDispatcher>()
 				.Except<ActionDispatcher>()
 				.AsImplementedInterfaces();
+			builder.RegisterType<HotkeyManager>()
+				.AsSelf();
 
 			builder.RegisterType<ActionDispatcher>()
 				.WithParameter(
@@ -141,21 +148,15 @@ namespace PassWinmenu
 					typeof(GpgAgentConfigUpdater),
 					typeof(GpgTransport),
 					typeof(GpgAgent),
-					typeof(GpgResultVerifier)
+					typeof(GpgResultVerifier),
+					typeof(GPG)
 				).AsImplementedInterfaces()
 				.AsSelf();
 
 			// Register GPG installation
-			builder.Register(context => context.Resolve<GpgInstallationFinder>().FindGpgInstallation(ConfigManager.Config.Gpg.GpgPath));
-
-			// Register GPG
-			builder.Register(context => new GPG(
-					context.Resolve<IGpgTransport>(),
-					context.Resolve<IGpgAgent>(),
-					context.Resolve<IGpgResultVerifier>(),
-					context.Resolve<GpgConfig>().PinentryFix))
-				.AsImplementedInterfaces()
-				.AsSelf();
+			// Single instance, as there is no need to look for the same GPG installation multiple times.
+			builder.Register(context => context.Resolve<GpgInstallationFinder>().FindGpgInstallation(ConfigManager.Config.Gpg.GpgPath))
+				.SingleInstance();
 
 			builder.RegisterType<DialogCreator>()
 				.AsSelf();
@@ -175,11 +176,18 @@ namespace PassWinmenu
 				.AsImplementedInterfaces()
 				.AsSelf();
 
+			builder.RegisterType<PasswordFileParser>().AsSelf();
+
 			// Create the Git wrapper, if enabled.
-			builder.Register(RegisterSyncService)
-				.AsImplementedInterfaces();
+			// This needs to be a single instance to stop startup warnings being displayed multiple times.
+			builder.RegisterType<GitSyncStrategies>().AsSelf();
+			builder.Register(CreateSyncService)
+				.AsSelf()
+				.SingleInstance();
 
 			builder.Register(context => UpdateCheckerFactory.CreateUpdateChecker(context.Resolve<UpdateCheckingConfig>(), context.Resolve<INotificationService>()));
+			builder.RegisterType<RemoteUpdateCheckerFactory>().AsSelf();
+			builder.Register(context => context.Resolve<RemoteUpdateCheckerFactory>().Build()).AsSelf();
 
 			// Build the container
 			container = builder.Build();
@@ -190,43 +198,46 @@ namespace PassWinmenu
 				container.Resolve<GpgAgentConfigUpdater>().UpdateAgentConfig(gpgConfig.GpgAgent.Config.Keys);
 			}
 
-			actionDispatcher = container.Resolve<ActionDispatcher>();
+			var actionDispatcher = container.Resolve<ActionDispatcher>();
 
 			notificationService.AddMenuActions(actionDispatcher);
 
 			// Assign our hotkeys.
-			hotkeys = new HotkeyManager();
-			AssignHotkeys(hotkeys);
+			AssignHotkeys(actionDispatcher);
+
+			// Start checking for updates
+			updateChecker = container.Resolve<UpdateChecker>();
+			remoteUpdateChecker = container.Resolve<Option<RemoteUpdateChecker>>();
+
+			if (container.Resolve<UpdateCheckingConfig>().CheckForUpdates)
+			{
+				updateChecker.Start();
+			}
+			remoteUpdateChecker.Apply(c => c.Start());
 		}
 
-		private static ISyncService RegisterSyncService (IComponentContext context)
+		private static Option<ISyncService> CreateSyncService(IComponentContext context)
 		{
 			var config = context.Resolve<GitConfig>();
+			var signService = context.Resolve<ISignService>();
 			var passwordStore = context.ResolveNamed<IDirectoryInfo>("PasswordStore");
 			var notificationService = context.Resolve<INotificationService>();
+			var strategies = context.Resolve<GitSyncStrategies>();
 
-			if (config.UseGit)
+			var factory = new SyncServiceFactory(config, passwordStore.FullName, signService, strategies);
+
+			var syncService = factory.BuildSyncService();
+			switch (factory.Status)
 			{
-				try
-				{
-					return new SyncServiceFactory().BuildSyncService(config, passwordStore.FullName);
-				}
-				catch (RepositoryNotFoundException)
-				{
-					// Password store doesn't appear to be a Git repository.
-					// Git support will be disabled.
-				}
-				catch (TypeInitializationException e) when (e.InnerException is DllNotFoundException)
-				{
+				case SyncServiceStatus.GitLibraryNotFound:
 					notificationService.ShowErrorWindow("The git2 DLL could not be found. Git support will be disabled.");
-				}
-				catch (Exception e)
-				{
-					notificationService.ShowErrorWindow($"Failed to open the password store Git repository ({e.GetType().Name}: {e.Message}). Git support will be disabled.");
-				}
+					break;
+				case SyncServiceStatus.GitRepositoryNotFound:
+					notificationService.ShowErrorWindow($"Failed to open the password store Git repository ({factory.Exception.GetType().Name}: {factory.Exception.Message}). Git support will be disabled.");
+					break;
 			}
 
-			return null;
+			return Option.FromNullable(syncService);
 		}
 
 		/// <summary>
@@ -239,7 +250,7 @@ namespace PassWinmenu
 			if (!Directory.Exists(ConfigManager.Config.PasswordStore.Location))
 			{
 				notificationService.ShowErrorWindow($"Could not find the password store at {Path.GetFullPath(ConfigManager.Config.PasswordStore.Location)}. Please make sure it exists.");
-				Exit();
+				App.Exit();
 				return;
 			}
 			try
@@ -249,13 +260,13 @@ namespace PassWinmenu
 			catch (System.ComponentModel.Win32Exception)
 			{
 				notificationService.ShowErrorWindow("Could not find GPG. Make sure your gpg-path is set correctly.");
-				Exit();
+				App.Exit();
 				return;
 			}
 			catch (Exception e)
 			{
 				notificationService.ShowErrorWindow($"Failed to initialise GPG. {e.GetType().Name}: {e.Message}");
-				Exit();
+				App.Exit();
 				return;
 			}
 			if (ConfigManager.Config.Gpg.GpgAgent.Preload)
@@ -278,37 +289,53 @@ namespace PassWinmenu
 			}
 		}
 
-		private void LoadConfigFile()
+		private void LoadConfigFile(RuntimeConfiguration runtimeConfig)
 		{
 			LoadResult result;
+
+			string configPath;
+			if (!string.IsNullOrEmpty(runtimeConfig.ConfigFileLocation))
+			{
+				configPath = Path.GetFullPath(runtimeConfig.ConfigFileLocation);
+			}
+			else
+			{
+				var executableDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
+				configPath = Path.Combine(executableDirectory!, ConfigFileName);
+			}
 			try
 			{
-				result = ConfigManager.Load(ConfigFileName);
+
+				result = ConfigManager.Load(configPath);
 			}
 			catch (Exception e) when (e.InnerException != null)
 			{
 				if (e is YamlException)
 				{
 					notificationService.ShowErrorWindow(
-						$"The configuration file could not be loaded: {e.Message}\n\n{e.InnerException.GetType().Name}: {e.InnerException.Message}",
+						$"The configuration file could not be loaded: {e.Message}\n\n" +
+						$"{e.InnerException.GetType().Name}: {e.InnerException.Message}",
 						"Unable to load configuration file.");
 				}
 				else
 				{
 					notificationService.ShowErrorWindow(
-						$"The configuration file could not be loaded. An unhandled exception occurred.\n{e.InnerException.GetType().Name}: {e.InnerException.Message}",
+						$"The configuration file could not be loaded. An unhandled exception occurred.\n" +
+						$"{e.InnerException.GetType().Name}: {e.InnerException.Message}",
 						"Unable to load configuration file.");
 				}
 
-				Exit();
+				App.Exit();
 				return;
 			}
 			catch (SemanticErrorException e)
 			{
 				notificationService.ShowErrorWindow(
-					$"The configuration file could not be loaded. An unhandled exception occurred.\n{e.GetType().Name}: {e.Message}",
+					$"The configuration file could not be loaded, a YAML error was encountered.\n" +
+					$"{e.GetType().Name}: {e.Message}\n\n" +
+					$"File location: {configPath}",
 					"Unable to load configuration file.");
-				Exit();
+				App.Exit();
 				return;
 			}
 			catch (YamlException e)
@@ -316,7 +343,7 @@ namespace PassWinmenu
 				notificationService.ShowErrorWindow(
 					$"The configuration file could not be loaded. An unhandled exception occurred.\n{e.GetType().Name}: {e.Message}",
 					"Unable to load configuration file.");
-				Exit();
+				App.Exit();
 				return;
 			}
 
@@ -326,22 +353,22 @@ namespace PassWinmenu
 					notificationService.Raise("A default configuration file was generated, but could not be saved.\nPass-winmenu will fall back to its default settings.", Severity.Error);
 					break;
 				case LoadResult.NewFileCreated:
-					var open = MessageBox.Show("A new configuration file has been generated. Please modify it according to your preferences and restart the application.\n\n" +
-					                           "Would you like to open it now?", "New configuration file created", MessageBoxButton.YesNo);
+					var open = MessageBox.Show("A new configuration file has been generated. Please modify it according to your preferences and restart the application.\n\n" + 
+					                                          "Would you like to open it now?", "New configuration file created", MessageBoxButton.YesNo);
 					if (open == MessageBoxResult.Yes) Process.Start(ConfigFileName);
-					Exit();
+					App.Exit();
 					return;
 				case LoadResult.NeedsUpgrade:
 					var backedUpFile = ConfigManager.Backup(ConfigFileName);
 					var openBoth = MessageBox.Show("The current configuration file is out of date. A new configuration file has been created, and the old file has been backed up.\n" +
-					                               "Please edit the new configuration file according to your preferences and restart the application.\n\n" +
-					                               "Would you like to open both files now?", "Configuration file out of date", MessageBoxButton.YesNo);
+					                                              "Please edit the new configuration file according to your preferences and restart the application.\n\n" +
+					                                              "Would you like to open both files now?", "Configuration file out of date", MessageBoxButton.YesNo);
 					if (openBoth == MessageBoxResult.Yes)
 					{
 						Process.Start(ConfigFileName);
 						Process.Start(backedUpFile);
 					}
-					Exit();
+					App.Exit();
 					return;
 			}
 			if (ConfigManager.Config.Application.ReloadConfig)
@@ -354,12 +381,13 @@ namespace PassWinmenu
 		/// <summary>
 		/// Loads keybindings from the configuration file and registers them with Windows.
 		/// </summary>
-		private void AssignHotkeys(HotkeyManager hotkeyManager)
+		private void AssignHotkeys(ActionDispatcher actionDispatcher)
 		{
 			try
 			{
+				var hotkeyManager = container.Resolve<HotkeyManager>();
 				hotkeyManager.AssignHotkeys(
-					ConfigManager.Config.Hotkeys ?? new HotkeyConfig[0],
+					ConfigManager.Config.Hotkeys ?? Array.Empty<HotkeyConfig>(),
 					actionDispatcher,
 					notificationService);
 			}
@@ -368,22 +396,25 @@ namespace PassWinmenu
 				Log.Send("Failed to register hotkeys", LogLevel.Error);
 				Log.ReportException(e);
 
-				notificationService.ShowErrorWindow(e.Message, "Could not register hotkeys");
-				Exit();
+				if ((uint?)e.InnerException?.HResult == HResult.HotkeyAlreadyRegistered)
+				{
+					notificationService.ShowErrorWindow("An error occured in registering the hotkeys.\r\n" +
+						"One or more hotkeys are already in use by another application.", "Could not register hotkeys");
+				}
+				else
+				{
+					notificationService.ShowErrorWindow(e.Message, "Could not register hotkeys");
+				}
+				App.Exit();
 			}
 		}
 
-		public static void Exit()
-		{
-			Log.Send("Shutting down.");
-			Environment.Exit(0);
-		}
 
 		public void Dispose()
 		{
 			notificationService?.Dispose();
-			hotkeys?.Dispose();
 			updateChecker?.Dispose();
+			container?.Dispose();
 		}
 	}
 }

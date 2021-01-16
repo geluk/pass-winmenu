@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -149,7 +150,7 @@ namespace PassWinmenu
 			writer?.WriteLine(line);
 		}
 
-		public static void Send(string message, LogLevel level = LogLevel.Debug)
+		public static void Send([Localizable(false)]string message, LogLevel level = LogLevel.Debug)
 		{
 			SendRaw($"[{GetLevelString(level)}] {message}");
 		}

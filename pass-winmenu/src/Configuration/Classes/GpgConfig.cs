@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using PassWinmenu.Utilities;
 
 namespace PassWinmenu.Configuration
 {
 	internal class GpgConfig
 	{
-		private string gpgPath = @"C:\Program Files (x86)\GnuPG\bin";
+		private string gpgPath = @"C:\Program Files (x86)\GnuPG\bin\gpg.exe";
 		public string GpgPath
 		{
 			get => gpgPath;

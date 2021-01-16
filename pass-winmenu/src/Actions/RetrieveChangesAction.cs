@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using PassWinmenu.Configuration;
 using PassWinmenu.ExternalPrograms;
+using PassWinmenu.Utilities;
 using PassWinmenu.WinApi;
 
 namespace PassWinmenu.Actions
@@ -12,9 +13,9 @@ namespace PassWinmenu.Actions
 
 		public HotkeyAction ActionType => HotkeyAction.GitPull;
 
-		public RetrieveChangesAction(ISyncService syncService, INotificationService notificationService)
+		public RetrieveChangesAction(Option<ISyncService> syncService, INotificationService notificationService)
 		{
-			this.syncService = syncService;
+			this.syncService = syncService.Value;
 			this.notificationService = notificationService;
 		}
 
@@ -31,7 +32,16 @@ namespace PassWinmenu.Actions
 			try
 			{
 				syncService.Fetch();
-				syncService.Rebase();
+				var details = syncService.GetTrackingDetails();
+				if (details.BehindBy > 0)
+				{
+					syncService.Rebase();
+					notificationService.Raise($"Pulled {details.BehindBy} new changes.", Severity.Info);
+				}
+				else
+				{
+					notificationService.Raise($"Your local repository already contains the latest changes.", Severity.Info);
+				}
 			}
 			catch (LibGit2SharpException e) when (e.Message == "unsupported URL protocol")
 			{

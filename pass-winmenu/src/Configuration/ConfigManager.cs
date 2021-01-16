@@ -20,7 +20,12 @@ namespace PassWinmenu.Configuration
 
 		public static void EnableAutoReloading(string fileName)
 		{
-			watcher = new FileSystemWatcher(Path.GetDirectoryName(fileName))
+			var directory = Path.GetDirectoryName(fileName);
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				directory = Directory.GetCurrentDirectory();
+			}
+			watcher = new FileSystemWatcher(directory)
 			{
 				IncludeSubdirectories = false,
 				EnableRaisingEvents = true
@@ -66,8 +71,7 @@ namespace PassWinmenu.Configuration
 			using (var reader = File.OpenText(fileName))
 			{
 				var versionCheck = deserialiser.Deserialize<Dictionary<string, object>>(reader);
-
-				if (!versionCheck.ContainsKey("config-version"))
+				if (versionCheck == null || !versionCheck.ContainsKey("config-version"))
 				{
 					return LoadResult.NeedsUpgrade;
 				}
@@ -85,7 +89,7 @@ namespace PassWinmenu.Configuration
 		private static IDeserializer BuildDeserialiser()
 		{
 			var builder = new DeserializerBuilder()
-				.WithNamingConvention(new HyphenatedNamingConvention())
+				.WithNamingConvention(HyphenatedNamingConvention.Instance)
 				.WithTypeConverter(new WidthConverter())
 				.WithTypeConverter(new BrushConverter());
 			return builder.Build();
@@ -124,7 +128,7 @@ namespace PassWinmenu.Configuration
 			var counter = 2;
 			while (File.Exists(newFileName))
 			{
-				newFileName =$"{root}-backup-{counter}{extension}";
+				newFileName =$"{root}-backup-{counter++}{extension}";
 			}
 
 			File.Move(fileName, newFileName);

@@ -33,7 +33,7 @@ namespace PassWinmenu.ExternalPrograms.Gpg
 			while ((stderrLine = gpgProc.StandardError.ReadLine()) != null)
 			{
 				Log.Send($"[GPG]: {stderrLine}");
-				if (stderrLine.StartsWith(StatusMarker))
+				if (stderrLine.StartsWith(StatusMarker, StringComparison.Ordinal))
 				{
 					// This line is a status line, so extract status information from it.
 					var statusLine = stderrLine.Substring(StatusMarker.Length);

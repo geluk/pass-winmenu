@@ -1,9 +1,5 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PassWinmenu.Hotkeys
@@ -11,7 +7,7 @@ namespace PassWinmenu.Hotkeys
 	/// <summary>
 	/// Represents a hotkey registered.
 	/// </summary>
-	public sealed class Hotkey
+	internal sealed class Hotkey
 		: IDisposable
 	{
 		/// <summary>

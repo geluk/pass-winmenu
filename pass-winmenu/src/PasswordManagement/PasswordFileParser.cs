@@ -8,6 +8,13 @@ namespace PassWinmenu.PasswordManagement
 {
 	internal class PasswordFileParser
 	{
+		private readonly UsernameDetectionConfig usernameDetection;
+
+		public PasswordFileParser(UsernameDetectionConfig usernameDetection)
+		{
+			this.usernameDetection = usernameDetection;
+		}
+
 		/// <summary>
 		/// Extracts the username and any possible metadata from a password file
 		/// by auto-detecting the correct line-endings.
@@ -36,7 +43,7 @@ namespace PassWinmenu.PasswordManagement
 			}
 		}
 
-		private IEnumerable<KeyValuePair<string, string>> ExtractKeys(string metadata)
+		private static IEnumerable<KeyValuePair<string, string>> ExtractKeys(string metadata)
 		{
 			var matches = Regex.Matches(metadata, @"([A-z0-9-_ ]+): (.*?)([\r\n]+|$)", RegexOptions.Singleline);
 			foreach (Match match in matches)
@@ -58,16 +65,15 @@ namespace PassWinmenu.PasswordManagement
 		/// </returns>
 		public string GetUsername(ParsedPasswordFile passwordFile)
 		{
-			// TODO: write tests for this.
-			var options = ConfigManager.Config.PasswordStore.UsernameDetection.Options;
-			switch (ConfigManager.Config.PasswordStore.UsernameDetection.Method)
+			var options = usernameDetection.Options;
+			switch (usernameDetection.Method)
 			{
 				case UsernameDetectionMethod.FileName:
 					return passwordFile.FileNameWithoutExtension;
 				case UsernameDetectionMethod.LineNumber:
 					var extraLines = passwordFile.Metadata.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 					var lineNumber = options.LineNumber - 2;
-					if (lineNumber <= 1) throw new PasswordParseException("Invalid line number for username detection.");
+					if (lineNumber < 0) throw new PasswordParseException($"The username may not be located on line #{options.LineNumber}.");
 					return lineNumber < extraLines.Length ? extraLines[lineNumber] : null;
 				case UsernameDetectionMethod.Regex:
 					var rgxOptions = options.RegexOptions.IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
@@ -81,8 +87,7 @@ namespace PassWinmenu.PasswordManagement
 		}
 	}
 
-	[Serializable]
-	internal class PasswordParseException : Exception
+	public class PasswordParseException : Exception
 	{
 		public PasswordParseException(string message) : base(message)
 		{

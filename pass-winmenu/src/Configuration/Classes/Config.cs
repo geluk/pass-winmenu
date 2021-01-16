@@ -1,6 +1,4 @@
-﻿using PassWinmenu.Utilities.ExtensionMethods;
-
-namespace PassWinmenu.Configuration
+﻿namespace PassWinmenu.Configuration
 {
 	internal class Config
 	{

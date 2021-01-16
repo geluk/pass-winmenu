@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 using McSherry.SemanticVersioning;
 
@@ -115,7 +111,7 @@ namespace PassWinmenu.UpdateChecking
 		/// <summary>
 		/// Makes a lightweight HTTP request to Google to check whether an internet connection is available.
 		/// </summary>
-		private bool GetConnectivity()
+		private static bool GetConnectivity()
 		{
 			try
 			{

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 using Disposable = PassWinmenu.Utilities.Disposable;
-using Helpers    = PassWinmenu.Utilities.Helpers;
+using Helpers = PassWinmenu.Utilities.Helpers;
 
 namespace PassWinmenu.Hotkeys
 {

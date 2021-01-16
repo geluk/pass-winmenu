@@ -6,7 +6,7 @@ Pass-winmenu follows the philosophy of (and is compatible with) the Linux passwo
 
 ---
 
-![demonstration GIF](https://i.imgur.com/Yf9XBQn.gif)
+![demonstration GIF](https://i.imgur.com/ihaveJt.gif)
 
 Donations to this project will go to acquiring a code signing certificate; for verifying downloads and allowing Windows Defender to eventually start trusting the application.
 
@@ -43,7 +43,7 @@ depending on your `pass-winmenu.yaml` settings.
 
 Pass-winmenu can be configured using the `pass-winmenu.yaml` configuration file located next to the `pass-winmenu.exe` executable.
 
-The configuration file is extensively documented, and there are many settings that can be changed to tweak the application to your liking, so take your time to look through it. You can always generate a new configuration file, containing all settings and their default values, by renaming or deleting the old one and starting pass-winmenu.
+The configuration file is extensively documented, and there are many settings that can be changed to tweak the application to your liking, so take your time to look through it (you can find an example [here](https://github.com/geluk/pass-winmenu/blob/master/pass-winmenu/embedded/default-config.yaml)). You can always generate a new configuration file, containing all settings and their default values, by renaming or deleting the old one and starting pass-winmenu.
 
 ## Dependencies
 
@@ -103,8 +103,7 @@ You should now have a working password manager.
 ### Password synchronisation
 
 If you want to access your passwords on multiple devices, you have several options.
-What follows are the instructions for setting up Git (which is by far the most popular option), but all software 
-able to synchronise directories will work: Git, SVN, Dropbox, Google Drive, ownCloud, network shares, bittorrent sync...
+What follows are the instructions for setting up Git (which is by far the most popular option), but you can also use SVN, Dropbox, Google Drive, ownCloud, network shares, bittorrent sync, or anything else that synchronises files or provides access to them from multiple locations.
 
 To synchronise your passwords using Git, initialise a new Git repository at the root of your password store:
 ```
@@ -114,8 +113,8 @@ powershell> git add -A
 powershell> git commit -m "Initialise password repository"
 ```
 
-You'll also need a remote Git server. GitLab offers free private repositories, and GitHub does too if
-you're a student. Alternatively, you can of course run your own Git server.
+You'll also need a remote Git server. GitLab offers free private repositories, and [GitHub does too](https://help.github.com/en/github/administering-a-repository/setting-repository-visibility#making-a-repository-private)
+for private accounts and up to three collaborators. Alternatively, you can of course run your own Git server.
 
 Add an empty repository on your Git provider of choice, then connect your password store to it. It will usually come down to something like this:
 

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,7 +24,7 @@ namespace PassWinmenu.Windows
 		{
 			var completions = autocomplete.GetCompletionList(SearchBox.Text).ToList();
 			if (!string.IsNullOrWhiteSpace(SearchBox.Text)
-				&& !SearchBox.Text.EndsWith("/")
+				&& !SearchBox.Text.EndsWith("/", StringComparison.Ordinal)
 				&& !completions.Contains(SearchBox.Text))
 			{
 				completions.Insert(0, SearchBox.Text);
@@ -37,7 +38,7 @@ namespace PassWinmenu.Windows
 			if (Options.IndexOf(Selected) > 0 || string.IsNullOrEmpty(SearchBox.Text))
 			{
 				var selection = GetSelection();
-				if (selection.EndsWith(Program.EncryptedFileExtension))
+				if (selection.EndsWith(Program.EncryptedFileExtension, StringComparison.Ordinal))
 				{
 					selection = selection.Substring(0, selection.Length - 4);
 				}
@@ -45,12 +46,12 @@ namespace PassWinmenu.Windows
 			}
 			else
 			{
-				if (SearchBox.Text.EndsWith("/"))
+				if (SearchBox.Text.EndsWith("/", StringComparison.Ordinal))
 				{
 					return;
 				}
 				var selection = GetSelection();
-				if (selection.EndsWith(Program.EncryptedFileExtension))
+				if (selection.EndsWith(Program.EncryptedFileExtension, StringComparison.Ordinal))
 				{
 					MessageBox.Show("A .gpg extension will be added automatically and does not need to be entered here.");
 					selection = selection.Substring(0, selection.Length - 4);

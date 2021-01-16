@@ -43,7 +43,7 @@ namespace PassWinmenu.WinApi
 		private string FindInPath(string fileName)
 		{
 			// The filename must end with with .exe
-			if (!fileName.EndsWith(".exe")) fileName = fileName + ".exe";
+			if (!fileName.EndsWith(".exe", StringComparison.Ordinal)) fileName = fileName + ".exe";
 
 			var path = environment.GetEnvironmentVariable("PATH");
 			if (path == null)

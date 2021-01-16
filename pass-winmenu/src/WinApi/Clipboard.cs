@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using PassWinmenu.Configuration;
@@ -9,7 +7,7 @@ using PassWinmenu.Utilities;
 
 namespace PassWinmenu.WinApi
 {
-	public class ClipboardHelper
+	public static class ClipboardHelper
 	{
 		/// <summary>
 		/// Copies a string to the clipboard. If it still exists on the clipboard after the amount of time
@@ -17,12 +15,12 @@ namespace PassWinmenu.WinApi
 		/// </summary>
 		/// <param name="text">The text to add to the clipboard.</param>
 		/// <param name="timeout">The amount of time, in seconds, the text should remain on the clipboard.</param>
-		public void Place(string text, TimeSpan timeout)
+		public static void Place(string text, TimeSpan timeout)
 		{
 			Helpers.AssertOnUiThread();
 
 			var clipboardBackup = MakeClipboardBackup();
-			Clipboard.SetText(text, TextDataFormat.UnicodeText);
+			Clipboard.SetDataObject(text);
 
 			Task.Delay(timeout).ContinueWith(_ =>
 			{
@@ -60,7 +58,7 @@ namespace PassWinmenu.WinApi
 		/// <summary>
 		/// Backs up the current clipboard data to a dictionary mapping data formats to contents.
 		/// </summary>
-		private Dictionary<string, object> MakeClipboardBackup()
+		private static Dictionary<string, object> MakeClipboardBackup()
 		{
 			var clipboardBackup = new Dictionary<string, object>();
 			var dataObject = Clipboard.GetDataObject();
@@ -86,7 +84,7 @@ namespace PassWinmenu.WinApi
 		}
 
 
-		public string GetText()
+		public static string GetText()
 		{
 			return Clipboard.ContainsText() ? Clipboard.GetText() : null;
 		}

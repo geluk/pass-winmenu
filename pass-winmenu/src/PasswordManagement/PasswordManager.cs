@@ -14,12 +14,18 @@ namespace PassWinmenu.PasswordManagement
 		private readonly IDirectoryInfo passwordStore;
 		private readonly ICryptoService cryptoService;
 		private readonly IRecipientFinder recipientFinder;
+		private readonly PasswordFileParser passwordFileParser;
 
 		private IFileSystem FileSystem => passwordStore.FileSystem;
 
-		public PasswordManager(IDirectoryInfo passwordStore, ICryptoService cryptoService, IRecipientFinder recipientFinder)
+		public PasswordManager(
+			IDirectoryInfo passwordStore,
+			ICryptoService cryptoService,
+			IRecipientFinder recipientFinder,
+			PasswordFileParser passwordFileParser)
 		{
 			this.recipientFinder = recipientFinder;
+			this.passwordFileParser = passwordFileParser;
 			this.passwordStore = passwordStore;
 			this.cryptoService = cryptoService;
 		}
@@ -72,7 +78,7 @@ namespace PassWinmenu.PasswordManagement
 			if (!file.FileInfo.Exists) throw new ArgumentException($"The password file \"{file.FullPath}\" does not exist.");
 
 			var content = cryptoService.Decrypt(file.FullPath);
-			return new PasswordFileParser().Parse(file, content, !passwordOnFirstLine);
+			return passwordFileParser.Parse(file, content, !passwordOnFirstLine);
 		}
 
 		/// <summary>
