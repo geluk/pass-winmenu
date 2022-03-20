@@ -37,20 +37,6 @@ namespace PassWinmenu.Utilities
 		}
 
 		/// <summary>
-		/// Converts an ARGB hex colour code into a SolidColorBrush object.
-		/// </summary>
-		/// <param name="colour">A hexadecimal colour code string (such as #AAFF00FF)</param>
-		/// <returns>A Brush created from a Colour object created from the colour code.</returns>
-		internal static Brush BrushFromColourString(string colour)
-		{
-			if (colour == "[accent]")
-			{
-				return SystemParameters.WindowGlassBrush;
-			}
-			return new SolidColorBrush(ColourFromString(colour));
-		}
-
-		/// <summary>
 		/// Ensures that the thread calling this method is a UI thread.
 		/// </summary>
 		internal static void AssertOnUiThread()

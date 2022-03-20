@@ -1,5 +1,5 @@
 using System.IO;
-using PassWinmenu.Configuration;
+using PassWinmenu.Configuration.Types;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 

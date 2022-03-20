@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PassWinmenu.Utilities.ExtensionMethods;
+using YamlDotNet.Serialization;
 
 #nullable enable
 namespace PassWinmenu.Configuration
@@ -9,9 +10,11 @@ namespace PassWinmenu.Configuration
 	{
 		public string Name { get; set; } = "No name set";
 		public string Characters { get; set; } = string.Empty;
+		[YamlIgnore]
 		public HashSet<int> CharacterSet => new HashSet<int>(Characters.ToCodePoints());
 		public bool Enabled { get; set; }
 
+		// Used by the deserialiser
 		public CharacterGroupConfig()
 		{
 		}
