@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PassWinmenuTests</RootNamespace>
     <AssemblyName>pass-winmenu-tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -18,6 +18,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +28,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +37,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -50,7 +53,10 @@
     <Compile Include="Configuration\ConfigManagerTests.cs" />
     <Compile Include="Configuration\ConfigurationDeserialiserTests.cs" />
     <Compile Include="Configuration\RuntimeConfigurationTests.cs" />
-    <Compile Include="Configuration\WidthConverterTests.cs" />
+    <Compile Include="Configuration\StringExtensions.cs" />
+    <Compile Include="Configuration\Types\ExpandedPathConverterTests.cs" />
+    <Compile Include="Configuration\Types\ExpandedPathTests.cs" />
+    <Compile Include="Configuration\Types\WidthConverterTests.cs" />
     <Compile Include="EmbeddedResources\EmbeddedResourcesTests.cs" />
     <Compile Include="ExternalPrograms\Git\RemoteUpdateCheckerTests.cs" />
     <Compile Include="ExternalPrograms\Git\GitSyncStrategiesTests.cs" />
