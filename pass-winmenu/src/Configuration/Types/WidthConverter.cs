@@ -6,7 +6,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NodeDeserializers;
 
 #nullable enable
-namespace PassWinmenu.Configuration
+namespace PassWinmenu.Configuration.Types
 {
 	internal class WidthConverter : IYamlTypeConverter
 	{
@@ -65,7 +65,7 @@ namespace PassWinmenu.Configuration
 
 		public void WriteYaml(IEmitter emitter, object? value, Type type)
 		{
-			throw new NotImplementedException("Width serialisation is not supported yet.");
+			throw new NotImplementedException("Width serialisation is not supported.");
 		}
 	}
 }
