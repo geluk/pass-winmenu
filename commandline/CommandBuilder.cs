@@ -24,6 +24,9 @@ public class CommandBuilder
 		var list = new Command("list", "List passwords");
 		var path = new Argument<string>("path", "Search path") {Arity = ArgumentArity.ZeroOrOne};
 		list.AddArgument(path);
+		list.SetHandler(Commands.List, configFile, path);
+		
+		RootCommand.Add(list);
 
 		return this;
 	}
