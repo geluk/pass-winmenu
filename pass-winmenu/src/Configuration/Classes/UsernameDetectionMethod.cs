@@ -4,6 +4,7 @@
 	{
 		FileName,
 		LineNumber,
-		Regex
+		Regex,
+		FilePathRegex
 	}
 }

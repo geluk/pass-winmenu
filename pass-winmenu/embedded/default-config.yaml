@@ -93,6 +93,19 @@ password-store:
                 ignore-case: false
                 multiline: true
                 singleline: false
+        # Use a filepathregex to extract the username from the full path of the password file.
+        # The full path includes the password file name itself including the file extension
+        # Again, the username should be placed in a capturing group named 'username',
+        # which can be done by putting ?<username> at the beginning of the 
+        # capturing group.
+#       method: 'filepathregex'
+#           options:
+#               # Matches the name of the parent directory of the password file
+#               regex: '(?<username>[^\\]*)\\[^\\]*$'
+#               regex-options:
+#                   ignore-case: false
+#                   multiline: true
+#                   singleline: false
 
 # Settings for git-based password stores
 git:

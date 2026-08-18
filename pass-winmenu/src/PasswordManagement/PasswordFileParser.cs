@@ -86,6 +86,14 @@ namespace PassWinmenu.PasswordManagement
 					rgxOptions |= options.RegexOptions.Singleline ? RegexOptions.Singleline : RegexOptions.None;
 					var match = Regex.Match(passwordFile.Metadata, options.Regex, rgxOptions);
 					return match.Groups["username"].Success ? match.Groups["username"].Value : null;
+				case UsernameDetectionMethod.FilePathRegex:
+					rgxOptions = options.RegexOptions.IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
+					// I think these options don't make any difference, because filenames can not have file separators.
+					// Keeping them anyway, because they shouldn't break anything
+					rgxOptions |= options.RegexOptions.Multiline ? RegexOptions.Multiline : RegexOptions.None;
+					rgxOptions |= options.RegexOptions.Singleline ? RegexOptions.Singleline : RegexOptions.None; 
+					match = Regex.Match(passwordFile.FullPath, options.Regex, rgxOptions);
+					return match.Groups["username"].Success ? match.Groups["username"].Value : null;
 				default:
 					throw new Exception("Invalid username detection method.");
 			}
