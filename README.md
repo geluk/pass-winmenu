@@ -4,13 +4,11 @@ A simple, easy-to-use password manager for Windows.
 
 Pass-winmenu follows the philosophy of (and is compatible with) the Linux password manager [pass](https://www.passwordstore.org), which defines an open standard for password management that's easy to extend and customise to your personal requirements.
 
+ℹ️ This project is in maintenance mode. The main reason for this is that I personally do not use it anymore,* so I am no longer in a good position to review large contributions.
+
 ---
 
 ![demonstration GIF](https://i.imgur.com/ihaveJt.gif)
-
-Donations to this project will go to acquiring a code signing certificate; for verifying downloads and allowing Windows Defender to eventually start trusting the application.
-
-[![Donation button](https://www.paypalobjects.com/en_US/NL/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X46C4FW3NQAYS&source=url)
 
 ## Introduction
 
@@ -164,3 +162,7 @@ and start it again.
 Check out https://www.passwordstore.org/#other if you're looking for implementations for other operating systems.
 
 Personally, I use [Android Password Store](https://github.com/zeapo/Android-Password-Store) for Android, and [a dmenu script](https://geluk.io/p/passmenu.sh) for Linux, which I've adapted from [this script](https://git.zx2c4.com/password-store/tree/contrib/dmenu).
+
+---
+
+*) I've moved away for a variety of reasons. When I started using pass, it was the only open source password manager that shared my belief that a password manager should just get out of the way and interfere as minimally with your workflow as possible. The 'amalgamation of open standards' approach of pass also appealed to me. I developed pass-winmenu as a natural extension to that, providing a simple way to bring the pass + dmenu flow to Windows. However, the `pass` project itself has not seen significant development in several years, and GPG has suffered from consistent usability issues that introduce friction whenever you need to deal with key management. Nowadays, the landscape has expanded significantly, and many password managers offer first class support for authentication standards such as TOTP and passkeys.
